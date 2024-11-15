@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.SubScene?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="661.0" prefWidth="600.0" style="-fx-background-color: #212830;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+   <left>
+      <VBox alignment="CENTER_LEFT" depthTest="DISABLE" maxWidth="1.7976931348623157E308" spacing="10.0" style="-fx-background-color: none;" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="TOP_RIGHT" maxWidth="-Infinity" prefHeight="0.0" spacing="5.0" style="-fx-background-color: #3c4655;">
+               <children>
+                  <HBox>
+                     <children>
+                        <Label text="Dimension Settings" textFill="WHITE">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font></Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Label text="L :   " textFill="WHITE" />
+                        <TextField fx:id="txtlength" focusTraversable="false" maxWidth="85.0" promptText="Enter length" text="70">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <Label text="m" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Label text="W : " textFill="WHITE" />
+                        <TextField fx:id="txtwidth" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="50">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <Label text="m" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <HBox spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Label text="H :  " textFill="WHITE" />
+                        <TextField fx:id="txtheight" focusTraversable="false" prefWidth="85.0" promptText="Enter height" text="20">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <Label text="m" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_RIGHT">
+                     <children>
+                        <Button fx:id="btndim" mnemonicParsing="false" text="Set" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0 " />
+               </padding>
+            </VBox>
+            <VBox alignment="TOP_RIGHT" prefWidth="0.0" spacing="5.0" style="-fx-background-color: #3c4655;">
+               <children>
+                  <HBox>
+                     <children>
+                        <Label text="Compressor location" textFill="WHITE">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Label text="X : " textFill="WHITE" />
+                        <TextField fx:id="txtlength1" focusTraversable="false" maxWidth="125.0" prefWidth="85.0" promptText="Enter length" text="70">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <Label text="m" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Label text="Y : " textFill="WHITE" />
+                        <TextField fx:id="txtwidth1" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="50">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <Label text="m" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_RIGHT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Button fx:id="btndim1" mnemonicParsing="false" text="Set" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+            <VBox alignment="TOP_RIGHT" prefWidth="0.0" spacing="5.0" style="-fx-background-color: #3c4655;">
+               <children>
+                  <HBox>
+                     <children>
+                        <Label text="Evaporator location" textFill="WHITE">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Label text="X : " textFill="WHITE" />
+                        <TextField fx:id="txtlength11" focusTraversable="false" maxWidth="85.0" promptText="Enter length" text="70">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <Label text="m" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Label text="Y : " textFill="WHITE" />
+                        <TextField fx:id="txtwidth11" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="50">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </TextField>
+                        <Label text="m" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_RIGHT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                     <children>
+                        <Button fx:id="btndim11" mnemonicParsing="false" text="Set" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="15.0" top="20.0" />
+         </BorderPane.margin>
+      </VBox>
+   </left>
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" style="-fx-font-color: white;" text="File">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="New" />
+                        <MenuItem mnemonicParsing="false" text="Open..." />
+                        <MenuItem mnemonicParsing="false" text="Save" />
+                        <MenuItem mnemonicParsing="false" text="Save As..." />
+                        <MenuItem mnemonicParsing="false" text="Exit" />
+                     </items>
+                </Menu>
+                  <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem mnemonicParsing="false" text="FAQ" />
+                        <MenuItem mnemonicParsing="false" text="Read documentation" />
+                        <MenuItem mnemonicParsing="false" text="Open GitHub Repository" />
+                    </items>
+                  </Menu>
+              </menus>
+            </MenuBar>
+            <HBox prefHeight="25.0" spacing="10.0" style="-fx-background-color: #f3f3f3;">
+               <children>
+                  <Label>
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/clipboard.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Label>
+                  <Label>
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/open-folder.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Label>
+                  <Label>
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/save.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Label>
+                  <ComboBox fx:id="cbboxref" promptText="R-22" />
+                  <Separator prefHeight="39.0" prefWidth="200.0" visible="false" HBox.hgrow="ALWAYS" />
+                  <Label>
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/play%20(2).png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="10.0" right="15.0" top="8.0" />
+               </padding>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <Pane BorderPane.alignment="CENTER">
+         <children>
+            <SubScene fx:id="threeDModel" depthBuffer="true">
+              <root>
+                <Region />
+              </root>
+            </SubScene>
+         </children>
+      </Pane>
+   </center>
+   <bottom>
+      <HBox alignment="TOP_RIGHT">
+         <children>
+            <Label>
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/air-conditioner.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="10.0" right="15.0" top="8.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>
