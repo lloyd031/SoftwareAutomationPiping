@@ -14,29 +14,57 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Font?>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="661.0" prefWidth="600.0" style="-fx-background-color: #212830;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+   <center>
+      <SubScene fx:id="threeDModel" depthBuffer="true" BorderPane.alignment="CENTER">
+        <root>
+          <Region />
+        </root>
+      </SubScene>
+   </center>
    <left>
-      <VBox alignment="CENTER_LEFT" depthTest="DISABLE" maxWidth="1.7976931348623157E308" spacing="10.0" style="-fx-background-color: none;" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER_LEFT" depthTest="DISABLE" spacing="10.0" style="-fx-background-color: #17171900#4a697c;" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="TOP_RIGHT" maxWidth="-Infinity" prefHeight="0.0" spacing="5.0" style="-fx-background-color: #3c4655;">
+            <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4655;">
+               <children>
+                  <HBox>
+                     <children>
+                        <Label text="Installation location" textFill="WHITE">
+                           <font>
+                              <Font name="Arial" size="13.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <ComboBox fx:id="cbboxwall" prefWidth="85.0" promptText="Wall-1" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0 " />
+               </padding>
+            </VBox>
+            <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4655;">
                <children>
                   <HBox>
                      <children>
                         <Label text="Dimension Settings" textFill="WHITE">
                            <font>
                               <Font name="Arial" size="13.0" />
-                           </font></Label>
+                           </font>
+                        </Label>
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="L :   " textFill="WHITE" />
-                        <TextField fx:id="txtlength" focusTraversable="false" maxWidth="85.0" promptText="Enter length" text="70">
+                        <TextField fx:id="txtlength" focusTraversable="false" maxWidth="85.0" promptText="Enter length" text="7">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -47,7 +75,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="W : " textFill="WHITE" />
-                        <TextField fx:id="txtwidth" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="50">
+                        <TextField fx:id="txtwidth" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="5">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -58,7 +86,7 @@
                   <HBox spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="H :  " textFill="WHITE" />
-                        <TextField fx:id="txtheight" focusTraversable="false" prefWidth="85.0" promptText="Enter height" text="20">
+                        <TextField fx:id="txtheight" focusTraversable="false" prefWidth="85.0" promptText="Enter height" text="2">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -76,11 +104,11 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0 " />
                </padding>
             </VBox>
-            <VBox alignment="TOP_RIGHT" prefWidth="0.0" spacing="5.0" style="-fx-background-color: #3c4655;">
+            <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4655;">
                <children>
                   <HBox>
                      <children>
-                        <Label text="Compressor location" textFill="WHITE">
+                        <Label text="Evaporator Settings" textFill="WHITE">
                            <font>
                               <Font name="Arial" size="13.0" />
                            </font>
@@ -90,7 +118,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="X : " textFill="WHITE" />
-                        <TextField fx:id="txtlength1" focusTraversable="false" maxWidth="125.0" prefWidth="85.0" promptText="Enter length" text="70">
+                        <TextField fx:id="txtlength1" focusTraversable="false" maxWidth="125.0" prefWidth="85.0" text="2.5">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -101,7 +129,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="Y : " textFill="WHITE" />
-                        <TextField fx:id="txtwidth1" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="50">
+                        <TextField fx:id="txtwidth1" focusTraversable="false" prefWidth="85.0" text="1">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -109,6 +137,8 @@
                         <Label text="m" textFill="WHITE" />
                      </children>
                   </HBox>
+                  <HBox />
+                  <HBox alignment="CENTER" />
                   <HBox alignment="TOP_RIGHT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Button fx:id="btndim1" mnemonicParsing="false" text="Set" />
@@ -119,11 +149,11 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </VBox>
-            <VBox alignment="TOP_RIGHT" prefWidth="0.0" spacing="5.0" style="-fx-background-color: #3c4655;">
+            <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4655;">
                <children>
                   <HBox>
                      <children>
-                        <Label text="Evaporator location" textFill="WHITE">
+                        <Label text="Compressor Settings" textFill="WHITE">
                            <font>
                               <Font name="Arial" size="13.0" />
                            </font>
@@ -133,7 +163,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="X : " textFill="WHITE" />
-                        <TextField fx:id="txtlength11" focusTraversable="false" maxWidth="85.0" promptText="Enter length" text="70">
+                        <TextField fx:id="txtlength11" focusTraversable="false" maxWidth="85.0">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -144,7 +174,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="Y : " textFill="WHITE" />
-                        <TextField fx:id="txtwidth11" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="50">
+                        <TextField fx:id="txtwidth11" focusTraversable="false" prefWidth="85.0">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -240,17 +270,6 @@
          </children>
       </VBox>
    </top>
-   <center>
-      <Pane BorderPane.alignment="CENTER">
-         <children>
-            <SubScene fx:id="threeDModel" depthBuffer="true">
-              <root>
-                <Region />
-              </root>
-            </SubScene>
-         </children>
-      </Pane>
-   </center>
    <bottom>
       <HBox alignment="TOP_RIGHT">
          <children>
@@ -269,4 +288,5 @@
          </padding>
       </HBox>
    </bottom>
+   
 </BorderPane>

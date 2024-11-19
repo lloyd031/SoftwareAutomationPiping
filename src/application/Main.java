@@ -36,7 +36,6 @@ public class Main extends Application {
 	        
 	        //primaryStage.setMaximized(true);
 			primaryStage.setTitle("Refrigerant Piping Software Automation");
-	        scene.setFill(Color.WHITE);
 	        primaryStage.setScene(scene);
 	        
 	        primaryStage.show();
@@ -50,6 +49,7 @@ public class Main extends Application {
 	}
 	
 	public static void main(String[] args) {
+		
 		launch(args);
 	}
 }
