@@ -23,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -36,16 +37,18 @@ import javafx.scene.transform.Translate;
 
 
 public class MainController implements Initializable{
-	private boolean walldragged=false;
+	private boolean compdragged=false;
 	private double anchorX, anchorY;
 	private double anchorAngleX=0;
 	private double anchorAngleY=0;
 	private double roomHieght=20;
-	private double roomWidth=50;
-	private double roomLength=70;
 	private final DoubleProperty angleX=new SimpleDoubleProperty(0);
 	private final DoubleProperty angleY=new SimpleDoubleProperty(45);
     private Group acu;
+    private double width=50;
+    private double height=20;
+    private double length=70;
+    private int selectedwall=2;
     private Node[] n;
     private PointLight acuL;
 	@FXML
@@ -54,10 +57,15 @@ public class MainController implements Initializable{
 	@FXML 
     private BorderPane borderPane;
 	@FXML 
-    private TextField txtlength,txtwidth,txtheight;
+    private TextField txtlength,txtwidth,txtheight,txtevapx,txtevapy;
     
 	@FXML
     private Button btndim;
+	
+
+	
+	@FXML
+    private Button btnevap;
 	
 	@FXML
 	private ComboBox<String> cbboxref;
@@ -94,6 +102,9 @@ public class MainController implements Initializable{
         threeDModel.setCamera(camera);
         initMouseControl(root3D, threeDModel,camera);
     	btndim.setOnMouseClicked(event -> {
+    		width=Double.parseDouble(txtwidth.getText())*10;
+    		length=Double.parseDouble(txtlength.getText())*10;
+    		height=Double.parseDouble(txtheight.getText())*10;
     		root3D.getChildren().clear();
     		loadModel(root3D);
     	});
@@ -101,30 +112,81 @@ public class MainController implements Initializable{
     	cbboxwall.setOnAction(event -> {
             System.out.println("Selected value: " + cbboxwall.getSelectionModel().getSelectedIndex());
             root3D.getChildren().removeAll(acu,acuL);
-            acu=setAcu(cbboxwall.getSelectionModel().getSelectedIndex());
+            selectedwall=cbboxwall.getSelectionModel().getSelectedIndex();
+            acu=setAcu(selectedwall);
+            btnevap.requestFocus();
             System.out.println("acu : "+acu.getTranslateZ());
             addAcul(root3D);
             root3D.getChildren().add(acu);
         });
+    	
+       btnevap.setOnAction(e->{
+    	   double evapx =Double.parseDouble(txtevapx.getText())*10;
+    	   double evapy =Double.parseDouble(txtevapy.getText())*10;
+    	   acu.translateXProperty().set(width/2+evapx);
+       });
+       
+       btnevap.setOnKeyPressed(e->{
+    	   int i=(selectedwall==3 || selectedwall==0)?-1:1;
+    	   switch(e.getCode()) {
+    	   case D:
+    		   if(selectedwall==2 || selectedwall ==3) {
+    			   acu.translateXProperty().set(acu.getTranslateX()+0.3*i);
+    			   acuL.translateXProperty().set(acuL.getTranslateX()+0.3*i);
+    			   
+    		   }else {
+    			   acu.translateZProperty().set(acu.getTranslateZ()+0.3*i);
+    			   acuL.translateZProperty().set(acuL.getTranslateZ()+0.3*i);
+    		   }
+    		   break;
+    	   case A:
+    		   if(selectedwall==2 || selectedwall ==3) {
+    			   acu.translateXProperty().set(acu.getTranslateX()-0.3*i);
+    			   acuL.translateXProperty().set(acuL.getTranslateX()-0.3*i);
+    		   }else {
+    			   acu.translateZProperty().set(acu.getTranslateZ()-0.3*i);
+    			   acuL.translateZProperty().set(acuL.getTranslateZ()-0.3*i);
+    		   }
+    		   break;
+    	   case W:
+    		  
+    		   acu.translateYProperty().set(acu.getTranslateY()-0.3);
+    		   acuL.translateYProperty().set(acuL.getTranslateY()-0.3);
+    		   
+    		   break;
+    	   case S:
+    		   acu.translateYProperty().set(acu.getTranslateY()+0.3);
+    		   acuL.translateYProperty().set(acuL.getTranslateY()+0.3);
+    		   break;
+    	   default:
+    		   break;
+    	   
+    	   }
+       });
+    	
     }
     
     private void loadModel(Group root3D) {
-    	double width=Double.parseDouble(txtwidth.getText())*10;
-		double length=Double.parseDouble(txtlength.getText())*10;
-		double height=Double.parseDouble(txtheight.getText())*10;
+    	
 		root3D.getChildren().addAll(drawRoom(width,height,length));
         root3D.getChildren().addAll(prepareLightSource());
-        acu=setAcu(cbboxwall.getSelectionModel().getSelectedIndex());
+        
+        acu=setAcu(selectedwall);
         addAcul(root3D);
         root3D.getChildren().add(acu);
 		System.out.println("GGG");
     }
     private void addAcul(Group root) {
+    	int i=(selectedwall==2 || selectedwall==1)?1:-1;
     	root.getChildren().remove(acuL);
     	acuL=new PointLight();
         acuL.setColor(Color.valueOf("#001217"));
- 		Node a=this.n[cbboxwall.getSelectionModel().getSelectedIndex()];
- 		acuL.getTransforms().add(new Translate(a.getTranslateX(),a.getTranslateY(),a.getTranslateZ()));
+ 		Node a=this.n[selectedwall];
+ 		if(selectedwall==2 || selectedwall ==3) {
+ 			acuL.getTransforms().add(new Translate(a.getTranslateX()+3.5*i,a.getTranslateY(),a.getTranslateZ()));
+ 		}else {
+ 			acuL.getTransforms().add(new Translate(a.getTranslateX(),a.getTranslateY(),a.getTranslateZ()+3.5*i));
+ 		}
  		root.getChildren().add(acuL);
     }
     private Group setAcu(int i) {
@@ -217,6 +279,9 @@ public class MainController implements Initializable{
 	    	acu.translateXProperty().set(wall.getTranslateX()+((d+0.5)/2)*z);
 	    }
 	    System.out.println("acu : "+wall.getTranslateZ());
+	    acu.setOnMouseClicked(e->{
+	    	   btnevap.requestFocus();
+	       });
     	return  acu;
 	    //return new Node[] {acu,l,r,b,img,pLight};
     }
@@ -250,6 +315,7 @@ public class MainController implements Initializable{
     private Node[] drawRoom(double roomWidth, double roomHieght, double roomLength) {
     	//whlxyz
     	double wall=0.2032/2;
+    	
     	Box platform= prepareBox(roomWidth+5,roomLength+5,0.5,0,0.75,0,0);
 		Box floor= prepareBox(roomWidth,roomLength,1.5,0,0,0,1);
 		Box wall1= prepareBox(wall,roomLength+wall*2,roomHieght+0.75,(roomWidth/2)+wall/2,roomHieght/2*-1,0,0);
@@ -264,22 +330,7 @@ public class MainController implements Initializable{
 		Box wall10= prepareBox(wall,roomLength+wall*2,0.1,(roomWidth/2*-1)-wall/2,roomHieght*-1-0.75/2,0,2);
 		Box wall11=prepareBox(roomWidth,wall,0.1,0,roomHieght*-1-0.75/2,roomLength/2+wall/2,2);
 		Box wall12= prepareBox(roomWidth,wall,0.1,0,roomHieght*-1-0.75/2,roomLength/-2-wall/2,2);
-		wall1.setOnMouseClicked(event ->{
-			int c=event.getClickCount();
-			if(c>1) {
-				System.out.println("wall1 clicked");
-			}
-			
-		});
-		 System.out.println("wasfds dragged " + wall9.getTranslateY());
-		wall1.setOnMouseDragged(event -> {
-			walldragged=true;
-		    System.out.println("wall1 dragged " + event.getScreenX());
-		});
-		wall1.setOnMouseReleased(even ->{
-			 System.out.println("wall1 release");
-			walldragged=false;
-		});
+		
 		n[0]=wall1;
 		n[1]=wall2;
 		n[2]=wall3;
@@ -315,7 +366,7 @@ public class MainController implements Initializable{
 		});
 		
 		scene.setOnMouseDragged(event -> {
-			if(walldragged==false) {
+			if(compdragged==false) {
 				angleX.set(anchorAngleX-(anchorY-event.getSceneY()));
 				angleY.set(anchorAngleY+(anchorX-event.getSceneX()));
 			}
@@ -330,6 +381,7 @@ public class MainController implements Initializable{
 			group.translateYProperty().set(group.getTranslateY()+movement/2*-1);
 			System.out.println(group.getTranslateZ()+","+group.getTranslateY());
 		});
+		
 		
 		
 	}

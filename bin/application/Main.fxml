@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+<?import javafx.scene.text.Font?>
 
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="661.0" prefWidth="600.0" style="-fx-background-color: #212830;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <center>
@@ -118,7 +118,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="X : " textFill="WHITE" />
-                        <TextField fx:id="txtlength1" focusTraversable="false" maxWidth="125.0" prefWidth="85.0" text="2.5">
+                        <TextField fx:id="txtevapx" focusTraversable="false" maxWidth="125.0" prefWidth="85.0" text="2.5">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -129,7 +129,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="Y : " textFill="WHITE" />
-                        <TextField fx:id="txtwidth1" focusTraversable="false" prefWidth="85.0" text="1">
+                        <TextField fx:id="txtevapy" focusTraversable="false" prefWidth="85.0" text="1">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -141,7 +141,7 @@
                   <HBox alignment="CENTER" />
                   <HBox alignment="TOP_RIGHT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
-                        <Button fx:id="btndim1" mnemonicParsing="false" text="Set" />
+                        <Button fx:id="btnevap" mnemonicParsing="false" text="Set" />
                      </children>
                   </HBox>
                </children>
