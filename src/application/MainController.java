@@ -1,7 +1,6 @@
 package application;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.beans.property.DoubleProperty;
@@ -18,12 +17,9 @@ import javafx.scene.PointLight;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -41,16 +37,23 @@ public class MainController implements Initializable{
 	private double anchorX, anchorY;
 	private double anchorAngleX=0;
 	private double anchorAngleY=0;
+	private double tempX=0;
+	private double tempY=0;
 	private double roomHieght=20;
 	private final DoubleProperty angleX=new SimpleDoubleProperty(0);
 	private final DoubleProperty angleY=new SimpleDoubleProperty(45);
+	private DoubleProperty acuX=null;
+	private DoubleProperty acuY=null;
     private Group acu;
     private double width=50;
     private double height=20;
     private double length=70;
     private int selectedwall=2;
-    private Node[] n;
+    private Box[] n;
     private PointLight acuL;
+    private double acuw=10.5;
+    private double acuh=2.2;
+    private double acud=2;
 	@FXML
     private SubScene threeDModel;
 	
@@ -79,11 +82,8 @@ public class MainController implements Initializable{
     	cbboxwall.setItems(FXCollections.observableArrayList("Wall-1","Wall-2","Wall-3","Wall-4"));
         cbboxwall.getSelectionModel().select(2);
         Group root3D = new Group();
-         n=new Node[4];
+         n=new Box[4];
         loadModel(root3D);
-        
-        
-        
         threeDModel.setRoot(root3D);
         // Set camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -101,12 +101,18 @@ public class MainController implements Initializable{
         
         threeDModel.setCamera(camera);
         initMouseControl(root3D, threeDModel,camera);
+        initializeLocationAcu();
+        initAcuDragged();
     	btndim.setOnMouseClicked(event -> {
     		width=Double.parseDouble(txtwidth.getText())*10;
     		length=Double.parseDouble(txtlength.getText())*10;
     		height=Double.parseDouble(txtheight.getText())*10;
     		root3D.getChildren().clear();
     		loadModel(root3D);
+    		//setLoc();
+    		//initlocation();
+    		initializeLocationAcu();
+    		initAcuDragged();
     	});
     	
     	cbboxwall.setOnAction(event -> {
@@ -117,53 +123,111 @@ public class MainController implements Initializable{
             btnevap.requestFocus();
             System.out.println("acu : "+acu.getTranslateZ());
             addAcul(root3D);
+            initializeLocationAcu();
+            initAcuDragged();
             root3D.getChildren().add(acu);
         });
-    	
+       
        btnevap.setOnAction(e->{
-    	   double evapx =Double.parseDouble(txtevapx.getText())*10;
-    	   double evapy =Double.parseDouble(txtevapy.getText())*10;
-    	   acu.translateXProperty().set(width/2+evapx);
+    	   //initlocation();
        });
        
+      
        btnevap.setOnKeyPressed(e->{
-    	   int i=(selectedwall==3 || selectedwall==0)?-1:1;
-    	   switch(e.getCode()) {
-    	   case D:
-    		   if(selectedwall==2 || selectedwall ==3) {
-    			   acu.translateXProperty().set(acu.getTranslateX()+0.3*i);
-    			   acuL.translateXProperty().set(acuL.getTranslateX()+0.3*i);
-    			   
-    		   }else {
-    			   acu.translateZProperty().set(acu.getTranslateZ()+0.3*i);
-    			   acuL.translateZProperty().set(acuL.getTranslateZ()+0.3*i);
-    		   }
-    		   break;
-    	   case A:
-    		   if(selectedwall==2 || selectedwall ==3) {
-    			   acu.translateXProperty().set(acu.getTranslateX()-0.3*i);
-    			   acuL.translateXProperty().set(acuL.getTranslateX()-0.3*i);
-    		   }else {
-    			   acu.translateZProperty().set(acu.getTranslateZ()-0.3*i);
-    			   acuL.translateZProperty().set(acuL.getTranslateZ()-0.3*i);
-    		   }
-    		   break;
-    	   case W:
-    		  
-    		   acu.translateYProperty().set(acu.getTranslateY()-0.3);
-    		   acuL.translateYProperty().set(acuL.getTranslateY()-0.3);
-    		   
-    		   break;
-    	   case S:
-    		   acu.translateYProperty().set(acu.getTranslateY()+0.3);
-    		   acuL.translateYProperty().set(acuL.getTranslateY()+0.3);
-    		   break;
-    	   default:
-    		   break;
-    	   
-    	   }
-       });
+     	   int j=(selectedwall==3 || selectedwall==0)?-1:1;
+     	   double a =Double.parseDouble(txtevapx.getText());
+     	   switch(e.getCode()) {
+     	   case D:
+     		   if(selectedwall==2 || selectedwall ==3) {
+     			   
+     			   acuX.set(acuX.get()+0.25);
+     		   }else {
+     		   }
+     		   break;
+     	   case A:
+     		   if(selectedwall==2 || selectedwall ==3) {
+     		   }else {
+     		   }
+     		   break;
+     	   case W:
+     		  acuY.set(acuY.get()-0.25);
+     		   break;
+     	   case S:
+     		   break;
+     	   default:
+     		   break;
+     	   
+     	   }
+     	   setLoc();
+        });
     	
+    }
+   
+    private void initAcuDragged() {
+    	int i=(selectedwall==2 || selectedwall==1)?1:-1;
+    	acu.setOnMousePressed(e->{
+    		compdragged=true;
+    		anchorX=e.getSceneX();
+    		anchorY=e.getSceneY();
+    		tempX=acuX.get();
+    		tempY=acuY.get();
+    	});
+    	if(selectedwall==2 || selectedwall ==3) {
+    		acu.translateXProperty().bind(acuX);
+    		
+    	}else {
+    		acu.translateZProperty().bind(acuX);
+    	}
+    	
+    	double boundx = width/2*i-acuw/2*i;
+    	double boundz = length/2*i-acuw/2*i;
+    	double boundy = height/-2 + 1.20;
+    	System.out.print("Dfdffd "+boundy);
+    	acu.setOnMouseDragged(e->{
+    	setLoc();
+    	double newX=tempX-(anchorX-e.getSceneX())/10*i;
+    	double newY=tempY-(anchorY-e.getSceneY())/10;
+    	if((newX>boundx*-1 && newX<boundx+0.1 && selectedwall==2) || (newX>boundx && newX<boundx*-1+0.1 && selectedwall==3) ) {
+    		acuX.set(newX);
+    	}else if((newX>boundz*-1 && newX<boundz+0.1 && selectedwall==1) || (newX>boundz && newX<boundz*-1+0.1 && selectedwall==0)) {
+    		acuX.set(newX);
+    	}
+    	acu.translateYProperty().bind(acuY);
+    	if(newY>=boundy-0.05 && newY<=(boundy+1.20)*-1) {
+    		acuY.set(newY);
+    	}
+    	
+    	});
+    	
+    	
+    	acu.setOnMouseReleased(e->{
+    		compdragged=false;
+    	});
+    }
+    private void setLoc() {
+    	double cux=(selectedwall==2 || selectedwall==3)?(acu.getTranslateX()-width/-2-acuw/2)/10:(acu.getTranslateZ()-length/-2-acuw/2)/10;
+ 	    txtevapx.setText(String.format("%.2f",cux));
+ 	    double cuy=(acu.getTranslateY()-(height/-2+1.20))/10;
+ 	    
+ 	    
+ 	    txtevapy.setText(String.format("%.2f", cuy));
+    }
+    private void initializeLocationAcu()
+    {
+    	this.acuX=new SimpleDoubleProperty((-width/-2-acuw/2)/10);
+    	this.acuY=new SimpleDoubleProperty(0);
+    	setLoc();
+    }
+    private void initlocation() {
+    	double evapx =Double.parseDouble(txtevapx.getText())*10;
+	  	double evapy =Double.parseDouble(txtevapy.getText())*10;
+    	if(selectedwall==2 || selectedwall ==3) {
+    		
+    	  	   acu.translateXProperty().set((n[selectedwall].getTranslateX()-width/2+acuw/2)+evapx);
+    	}else{
+    		acu.translateZProperty().set((n[selectedwall].getTranslateZ()-length/2+acuw/2)+evapx);
+    	}
+    	acu.translateYProperty().set((height)/-2+1.25+evapy);
     }
     
     private void loadModel(Group root3D) {
@@ -194,16 +258,14 @@ public class MainController implements Initializable{
     	int z=(i==2 || i==0)?-1:1;
     	int deg=(i==2)?0:(i==3)?180:(i==0)?90:270;
     	//int deg=()?:;
-    	double w=10.5;
-    	double h=2.2;
-    	double d=2;
+    	
     	
  		
  		PhongMaterial material = new PhongMaterial();
         material.setDiffuseColor(Color.valueOf("#b0b2b4"));
         
-        Box box=new Box(w,h,1);
-		box.translateZProperty().set(0-(d-0.5)/2);
+        Box box=new Box(acuw,acuh,1);
+		box.translateZProperty().set(0-(acud-0.5)/2);
 	    box.translateYProperty().set(wall.getTranslateY());
 	    box.setMaterial(material);
 	    
@@ -212,7 +274,7 @@ public class MainController implements Initializable{
 	    //box.setRotationAxis(Rotate.Y_AXIS);
 		//box.setRotate(180);
 	    
-	    Cylinder c=new Cylinder(0.5,w);
+	    Cylinder c=new Cylinder(0.5,acuw);
         c.translateZProperty().set(box.getTranslateZ());
 	    c.translateYProperty().set(box.getTranslateY()-box.getHeight()/2);
 	    c.setRotationAxis(Rotate.X_AXIS);
@@ -220,7 +282,7 @@ public class MainController implements Initializable{
 		c.setRotate(90);
 		c.setMaterial(material);
 		
-		Cylinder c1=new Cylinder(0.5,w);
+		Cylinder c1=new Cylinder(0.5,acuw);
         c1.translateZProperty().set(box.getTranslateZ());
 	    c1.translateYProperty().set(box.getTranslateY()+box.getHeight()/2);
 	    c1.setRotationAxis(Rotate.X_AXIS);
@@ -228,24 +290,24 @@ public class MainController implements Initializable{
 		c1.setRotate(90);
 		c1.setMaterial(material);
 		
-		Box box1=new Box(w,0.3,d);
-		box1.translateZProperty().set(box.getTranslateZ()+d/2);
+		Box box1=new Box(acuw,0.3,acud);
+		box1.translateZProperty().set(box.getTranslateZ()+acud/2);
 	    box1.translateYProperty().set((box.getTranslateY()-box.getHeight()/2-0.5)+0.3/2);
 	    box1.setMaterial(material);
 	    
-	    Box box2=new Box(w,0.3,d);
-		box2.translateZProperty().set(box.getTranslateZ()+d/2);
+	    Box box2=new Box(acuw,0.3,acud);
+		box2.translateZProperty().set(box.getTranslateZ()+acud/2);
 	    box2.translateYProperty().set((box.getTranslateY()+box.getHeight()/2+0.5)-0.3/2);
 	    box2.setMaterial(material);
 	    
-	    Box box3=new Box(0.3,h+1,d);
-		box3.translateZProperty().set(box.getTranslateZ()+d/2);
+	    Box box3=new Box(0.3,acuh+1,acud);
+		box3.translateZProperty().set(box.getTranslateZ()+acud/2);
 		box3.translateYProperty().set(box.getTranslateY());
 		box3.translateXProperty().set((box.getTranslateX()-box.getWidth()/2)+0.3/2);
 		box3.setMaterial(material);
 		
-		Box box4=new Box(0.3,h+1,d);
-		box4.translateZProperty().set(box.getTranslateZ()+d/2);
+		Box box4=new Box(0.3,acuh+1,acud);
+		box4.translateZProperty().set(box.getTranslateZ()+acud/2);
 		box4.translateYProperty().set(box.getTranslateY());
 		box4.translateXProperty().set((box.getTranslateX()+box.getWidth()/2)-0.3/2);
 		box4.setMaterial(material);
@@ -263,7 +325,7 @@ public class MainController implements Initializable{
 	    PhongMaterial m = new PhongMaterial();
         m.setDiffuseColor(Color.valueOf("#2e4357"));
         m.setSpecularColor(Color.WHITE);
-	    Box fl=new Box(w-1.5,0.3,1.1);
+	    Box fl=new Box(acuw-1.5,0.3,1.1);
 	    fl.translateZProperty().set(box.getTranslateZ());
 	    fl.translateYProperty().set(box.getTranslateY()+(box.getHeight()/2));
 	    fl.setMaterial(m);
@@ -273,10 +335,12 @@ public class MainController implements Initializable{
 	    acu.getChildren().addAll(box,c,c1,box1,box2,box3,box4,img,fl);
 	    acu.setRotationAxis(Rotate.Y_AXIS);
 	    acu.setRotate(deg);
+
 	    if(i==2 || i==3) {
-	    	acu.translateZProperty().set(wall.getTranslateZ()+((d+0.5)/2)*z);
+	    	acu.translateZProperty().set(wall.getTranslateZ()+((acud+0.5)/2)*z);
+	    	
 	    }else if(i==0 || i ==1) {
-	    	acu.translateXProperty().set(wall.getTranslateX()+((d+0.5)/2)*z);
+	    	acu.translateXProperty().set(wall.getTranslateX()+((acud+0.5)/2)*z);
 	    }
 	    System.out.println("acu : "+wall.getTranslateZ());
 	    acu.setOnMouseClicked(e->{
@@ -379,10 +443,10 @@ public class MainController implements Initializable{
 			double movement=event.getDeltaY();
 			group.translateZProperty().set(group.getTranslateZ()+movement/2*-1);
 			group.translateYProperty().set(group.getTranslateY()+movement/2*-1);
-			System.out.println(group.getTranslateZ()+","+group.getTranslateY());
 		});
 		
 		
 		
 	}
 }
+/**/
