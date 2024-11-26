@@ -69,7 +69,7 @@ public class MainController implements Initializable{
 	@FXML 
     private BorderPane borderPane;
 	@FXML 
-    private TextField txtlength,txtwidth,txtheight,txtevapx,txtevapy;
+    private TextField txtlength,txtwidth,txtheight,txtevapx,txtevapy,txtcompx,txtcompy;
     
 	@FXML
     private Button btndim;
@@ -237,10 +237,10 @@ public class MainController implements Initializable{
      	    
      	    txtevapy.setText(String.format("%.2f", cuy));
     	}else {
-    		double cux=(selectedwall==2 || selectedwall==3)?(cmp.getTranslateX()-width/-2-compw/2)/10:(cmp.getTranslateZ()-length/-2-compw/2)/10;
-     	    txtevapx.setText(String.format("%.2f",cux));
+    		double cux=(selectedwall==2 || selectedwall==3)?(cmp.getTranslateX()-(width+wall*4)/-2-compw/2)/10:(cmp.getTranslateZ()-length/-2-compw/2)/10;
+    		txtcompx.setText(String.format("%.2f",cux));
      	    double cuy=(((Math.round((cmp.getTranslateY()-comph/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0)))/10;
-     	    txtevapy.setText(String.format("%.2f", cuy));
+     	   txtcompy.setText(String.format("%.2f", cuy));
     	}
     }
     private void initializeLocationAcu()
@@ -288,6 +288,8 @@ public class MainController implements Initializable{
  		}
  		root.getChildren().add(acuL);
     }
+    
+    
     private Group setAcu(int i) {
     	Node wall=this.n[i];
     	int z=(i==2 || i==0)?-1:1;
@@ -386,29 +388,86 @@ public class MainController implements Initializable{
     }
  
     private Group setCompressor() {
-    	Node w=n[selectedwall];
-    	int z=(selectedwall==2 || selectedwall==0)?-1:1;
-    	int deg=(selectedwall==2)?0:(selectedwall==3)?180:(selectedwall==0)?90:270;
-    	Box cmp=new Box(compw,comph,compd);
-    	cmp.translateYProperty().set(-20);
-    	cmp.translateZProperty().set(0);
-    	cmp.translateYProperty().set(height/-2);
-    	cmp.setOnMouseClicked(e->{
+    	int i=selectedwall;
+    	Node wall=this.n[i];
+    	int z=(i==2 || i==0)?-1:1;
+    	int deg=(i==2)?180:(i==3)?0:(i==0)?270:90;
+    	//int deg=()?:;
+    	
+    	
+ 		
+ 		PhongMaterial material = new PhongMaterial();
+        material.setDiffuseColor(Color.valueOf("#b0b2b4"));
+        
+        Box box=new Box(compw,comph,1);
+		box.translateZProperty().set(0-(compd-0.5)/2);
+	    box.translateYProperty().set((height+0.75)/-2+1);
+	    box.setMaterial(material);
+	    
+	    
+	    
+	    //box.setRotationAxis(Rotate.Y_AXIS);
+		//box.setRotate(180);
+	    
+	    Cylinder c=new Cylinder(0.5,compw);
+        c.translateZProperty().set(box.getTranslateZ());
+	    c.translateYProperty().set(box.getTranslateY()-box.getHeight()/2);
+	    c.setRotationAxis(Rotate.X_AXIS);
+	    c.setRotationAxis(Rotate.Z_AXIS);
+		c.setRotate(90);
+		c.setMaterial(material);
+		
+		Cylinder c1=new Cylinder(0.5,compw);
+        c1.translateZProperty().set(box.getTranslateZ());
+	    c1.translateYProperty().set(box.getTranslateY()+box.getHeight()/2);
+	    c1.setRotationAxis(Rotate.X_AXIS);
+	    c1.setRotationAxis(Rotate.Z_AXIS);
+		c1.setRotate(90);
+		c1.setMaterial(material);
+		
+		Box box1=new Box(compw,0.3,compd);
+		box1.translateZProperty().set(box.getTranslateZ()+compd/2);
+	    box1.translateYProperty().set((box.getTranslateY()-box.getHeight()/2-0.5)+0.3/2);
+	    box1.setMaterial(material);
+	    
+	    Box box2=new Box(compw,0.3,compd);
+		box2.translateZProperty().set(box.getTranslateZ()+compd/2);
+	    box2.translateYProperty().set((box.getTranslateY()+box.getHeight()/2+0.5)-0.3/2);
+	    box2.setMaterial(material);
+	    
+	    Box box3=new Box(0.3,comph+1,compd);
+		box3.translateZProperty().set(box.getTranslateZ()+compd/2);
+		box3.translateYProperty().set(box.getTranslateY());
+		box3.translateXProperty().set((box.getTranslateX()-box.getWidth()/2)+0.3/2);
+		box3.setMaterial(material);
+		
+		Box box4=new Box(0.3,comph+1,compd);
+		box4.translateZProperty().set(box.getTranslateZ()+compd/2);
+		box4.translateYProperty().set(box.getTranslateY());
+		box4.translateXProperty().set((box.getTranslateX()+box.getWidth()/2)-0.3/2);
+		box4.setMaterial(material);
+		  
+	    Group compressor=new Group();
+	    compressor.getChildren().addAll(box,c,c1,box1,box2,box3,box4);
+	    compressor.setRotationAxis(Rotate.Y_AXIS);
+	    compressor.setRotate(deg);
+
+	    if(i==2 || i==3) {
+	    	compressor.translateZProperty().set(wall.getTranslateZ()-((compd+0.5)/2)*z);
+	    	
+	    }else if(i==0 || i ==1) {
+	    	compressor.translateXProperty().set(wall.getTranslateX()-((compd+0.5)/2)*z);
+	    }
+	    System.out.println("acu : "+wall.getTranslateZ());
+	    compressor.setOnMouseClicked(e->{
 	    	   btnevap.requestFocus();
 	       });
-    	Group g=new Group();
-    	cmp.setRotationAxis(Rotate.Y_AXIS);
-    	cmp.setRotate(deg);
-    	if(selectedwall==2 || selectedwall==3) {
-    		cmp.translateZProperty().set(w.getTranslateZ()-((compd)/2 +wall)*z);
-	    	
-	    }else if(selectedwall==0 || selectedwall ==1) {
-	    	cmp.translateXProperty().set(w.getTranslateX()-(compd/2)*z);
-	    }
-    	g.getChildren().add(cmp);
-    	return g;
+	    
+    	return  compressor;
     }
-	private Box prepareBox(double width, double height, double length,double x, double y, double z, int floor) {
+	
+
+    private Box prepareBox(double width, double height, double length,double x, double y, double z, int floor) {
 		PhongMaterial material = new PhongMaterial();
 	
 		
@@ -418,9 +477,6 @@ public class MainController implements Initializable{
 		}else if(floor==2)
 		{
 		 material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/gray.jpg")));
-		}else if(floor==3){
-			material.setDiffuseColor(Color.valueOf("#6da0a9"));
-			
 		}else {
 			material.setDiffuseColor(Color.GREY);
 			//material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/white.jpg")));
@@ -442,7 +498,7 @@ public class MainController implements Initializable{
     	//whlxyz
     	
     	
-    	Box platform= prepareBox(roomWidth+5,roomLength+5,0.5,0,0,0,3);
+    	Box platform= prepareBox(roomWidth+5,roomLength+5,0.5,0,0,0,0);
 		Box floor= prepareBox(roomWidth,roomLength,1.5,0,0.4,0,1);
 		Box wall1= prepareBox(wall,roomLength+wall*2,roomHieght+0.75,(roomWidth/2)+wall/2,roomHieght/2*-1,0,0);
 		Box wall2= prepareBox(wall,roomLength+wall*2,roomHieght+0.75,(roomWidth/2*-1)-wall/2,roomHieght/2*-1,0,0);
@@ -470,7 +526,7 @@ public class MainController implements Initializable{
 		pLight.setColor(Color.WHITE);
 		pLight.getTransforms().add(new Translate(0,roomHieght*-1-10,0));
 		PointLight pLight1=new PointLight();
-		pLight1.setColor(Color.valueOf("#424242"));
+		pLight1.setColor(Color.valueOf("#373737"));
 		pLight1.getTransforms().add(new Translate(80,-5,-100));
 		
 		Sphere sphere=new Sphere(2);
