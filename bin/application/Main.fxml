@@ -163,7 +163,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="X : " textFill="WHITE" />
-                        <TextField fx:id="txtlength11" focusTraversable="false" maxWidth="85.0">
+                        <TextField id="txtcompx" fx:id="txtcompx" focusTraversable="false" maxWidth="85.0" text="1">
                            <font>
                               <Font size="13.0" />
                            </font>
@@ -174,7 +174,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>
                         <Label text="Y : " textFill="WHITE" />
-                        <TextField fx:id="txtwidth11" focusTraversable="false" prefWidth="85.0">
+                        <TextField id="txtcompy" fx:id="txtcompy" focusTraversable="false" prefWidth="85.0" text="1">
                            <font>
                               <Font size="13.0" />
                            </font>
