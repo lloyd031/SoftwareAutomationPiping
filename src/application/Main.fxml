@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.SubScene?>
+<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -10,6 +11,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -115,29 +117,90 @@
                         </Label>
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                     <children>
-                        <Label text="X : " textFill="WHITE" />
-                        <TextField fx:id="txtevapx" focusTraversable="false" maxWidth="125.0" prefWidth="85.0" text="2.5">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </TextField>
-                        <Label text="m" textFill="WHITE" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                     <children>
-                        <Label text="Y : " textFill="WHITE" />
-                        <TextField fx:id="txtevapy" focusTraversable="false" prefWidth="85.0" text="1">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                        </TextField>
-                        <Label text="m" textFill="WHITE" />
-                     </children>
-                  </HBox>
                   <HBox />
+                  <Accordion>
+                    <panes>
+                      <TitledPane animated="false" prefWidth="85.0" text="Dimension">
+                           <content>
+                              <VBox spacing="2.5">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                       <children>
+                                          <Label text="W : " />
+                                          <TextField fx:id="txtevapx1" focusTraversable="false" prefWidth="60.0" text="2.5">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </TextField>
+                                          <Label text="m" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                       <children>
+                                          <Label text="H : ">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="txtevapy1" focusTraversable="false" prefWidth="60.0" text="2.5">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </TextField>
+                                          <Label text="m" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                       <children>
+                                          <Label text="D  : " />
+                                          <TextField fx:id="txtevapx11" focusTraversable="false" prefWidth="60.0" text="2.5">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </TextField>
+                                          <Label text="m" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                      <TitledPane animated="false" text="Location">
+                           <content>
+                              <VBox alignment="TOP_CENTER" spacing="2.5">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                       <children>
+                                          <Label text="X : " />
+                                          <TextField fx:id="txtevapx" focusTraversable="false" prefWidth="60.0" text="2.5">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </TextField>
+                                          <Label text="m" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                       <children>
+                                          <Label text="Y : ">
+                                             <font>
+                                                <Font size="12.5" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="txtevapy" focusTraversable="false" prefWidth="60.0" text="2.5">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </TextField>
+                                          <Label text="m" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                    </panes>
+                  </Accordion>
                   <HBox alignment="CENTER" />
                   <HBox alignment="TOP_RIGHT" spacing="3.0" style="-fx-background-color: #3c465500;">
                      <children>

@@ -37,6 +37,7 @@ public class MainController implements Initializable{
 	private double anchorX, anchorY;
 	private double anchorAngleX=0;
 	private double anchorAngleY=0;
+	private double prevPointY=0;
 	private double tempX=0;
 	private double tempY=0;
 	private double roomHieght=20;
@@ -55,10 +56,10 @@ public class MainController implements Initializable{
     private Box[] n;
     private Box[] n2;
     private PointLight acuL;
-    private double acuw=8.4;
-    private double acuh=2;
-    private double acud=1.7;
-    
+    private double acuw=10.5;
+    private double acuh=3.2;
+    private double acud=2.5;
+    private Box floor=null;
     private double compw=8.7;
     private double comph=6.5 ;
     private double compd=3.3;
@@ -153,6 +154,7 @@ public class MainController implements Initializable{
 		selectedcomp=sc;
 		anchorX=x;
 		anchorY=y;
+		this.prevPointY=y;
 		if(sc==0) {
 			tempX=acuX.get();
 			tempY=acuY.get();
@@ -181,32 +183,72 @@ public class MainController implements Initializable{
     		cmp.translateZProperty().bind(compX);
     	}
     	
-    	
+    	acu.setOnMouseDragExited(e->{
+    		System.out.println("SDfsdfsf");
+    	});
     	acu.setOnMouseDragged(e->{
     		double boundx = width/2*i-acuw/2*i;
         	double boundz = length/2*i-acuw/2*i;
         	if(selectedcomp==0) {
-        		setLoc();
+        		
             	double newX=tempX-(anchorX-e.getSceneX())/10*i;
             	double newY=tempY-(anchorY-e.getSceneY())/10;
-            	 if((newX>boundx*-1-0.1 && newX<boundx && selectedwall==2) || (newX>boundx-0.1 && newX<boundx*-1 && selectedwall==3) ) {
+            	/**
+            	 * if((newX>boundx*-1 && newX<boundx+0.1 && selectedwall==2) || (newX>boundx && newX<boundx*-1+0.1 && selectedwall==3) ) {
             		acuX.set(newX);
-            	}else if((newX>boundz*-1-0.1 && newX<boundz && selectedwall==1) || (newX>boundz-0.1 && newX<boundz*-1 && selectedwall==0)) {
+            	}else if((newX>boundz*-1 && newX<boundz+0.1 && selectedwall==1) || (newX>boundz && newX<boundz*-1+0.1 && selectedwall==0)) {
             		acuX.set(newX);
             	}
-            	 
+            	 */
+            	
+            	if(selectedwall==2 || selectedwall==3) {
+            		if(newX-acuw/2 >= n[1].getTranslateX()+this.wall/2 && newX+acuw/2 <= n[0].getTranslateX()-this.wall/2) {
+                		acuX.set(newX);
+                	}
+            	}else {
+            		if(newX-acuw/2 >= n[3].getTranslateZ()+this.wall/2 && newX+acuw/2 <= n[2].getTranslateZ()-this.wall/2) {
+                		acuX.set(newX);
+                	}
+            	}
+            	
             	acu.translateYProperty().bind(acuY);
-            	if(((Math.round((newY-3.2/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0))>=0 && ((Math.round((newY+3.2/2)*10.0)/10.0)+(Math.round(((height-0.75)/-2)*10.0)/10.0))<=0) {
-            		acuY.set(newY);
+            	/**
+            	 * if(((Math.round((newY-3.2/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0))>=0 && ((Math.round((newY+3.2/2)*10.0)/10.0)+(Math.round(((height-0.75)/-2)*10.0)/10.0))<=0) {
+            		
             	}
+            	 */
+            	
+            		    //removing the second condition sa main ifs will result a wierd snapping effect sa acu
+            			if(this.prevPointY<e.getSceneY() && newY>n[selectedwall].getTranslateY()-height/2+acuh) {
+            				if(acu.getTranslateY()<0) {
+                        		acuY.set(newY);
+            					}
+                			else {
+                				acuY.set(0);
+                			}
+            			}else if(this.prevPointY>e.getSceneY() && newY<0) {
+            				if(acu.getTranslateY()>n[selectedwall].getTranslateY()-height/2+acuh) {
+                        		acuY.set(newY);
+            					}else {
+            						acuY.set(n[selectedwall].getTranslateY()-height/2+acuh);
+            					}
+                			
+            			}
+            		
+            	
+            			this.prevPointY=e.getSceneY();	
+            	System.out.println(acu.getTranslateY()+" "+(this.floor.getTranslateY()-0.75));
+            	 
+            	
         	}
         	
+        	setLoc();
         	});
     	cmp.setOnMouseDragged(e->{
     		double boundx = width/2*i-compw/2*i+(wall*2)*i;
         	double boundz = length/2*i-compw/2*i+(wall*2)*i;
         	if(selectedcomp==1) {
-        		setLoc();
+        		
             	double newX=tempX+(anchorX-e.getSceneX())/10*i;
             	double newY=tempY-(anchorY-e.getSceneY())/10;
             	if((newX>boundx*-1 && newX<boundx && selectedwall==2) || (newX>boundx && newX<boundx*-1 && selectedwall==3) ) {
@@ -218,7 +260,7 @@ public class MainController implements Initializable{
             	if(((Math.round((newY-comph/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0))>=0 && ((Math.round((newY+comph/2)*10.0)/10.0)+(Math.round(((height-0.75)/-2)*10.0)/10.0))<=0) {
             		compY.set(newY);
             	}
-            	compY.set(newY);
+            	setLoc();
         	}
         	
         	});
@@ -234,7 +276,7 @@ public class MainController implements Initializable{
     //this line -0.04 has no exact reference but rather a result of trial and error in choosing b
     private void setLoc() {
     	if(selectedcomp==0) {
-    		double cux=(selectedwall==2 || selectedwall==3)?(width/2-(acu.getTranslateX()+acuw/2))/10:((length/2)-(acu.getTranslateZ()+acuw/2))/10;
+    		double cux=(selectedwall==2 || selectedwall==3)?(acu.getTranslateX()-width/-2-acuw/2)/10:(acu.getTranslateZ()-length/-2-acuw/2)/10;
      	    txtevapx.setText(String.format("%.2f",cux));
      	    double cuy=(((Math.round((acu.getTranslateY()-3.2/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0)))/10;
      	    
@@ -248,8 +290,8 @@ public class MainController implements Initializable{
     }
     private void initializeLocationAcu()
     {
-    	this.acuX=new SimpleDoubleProperty((-width/-2-acuw/2)/10);
-    	this.acuY=new SimpleDoubleProperty(0);
+    	this.acuX=new SimpleDoubleProperty(0);
+    	this.acuY=new SimpleDoubleProperty((height)/-2+acuh/2);
     	this.compX=new SimpleDoubleProperty((-width/-2-compw/2)/10);
     	this.compY=new SimpleDoubleProperty(0);
     	
@@ -275,7 +317,9 @@ public class MainController implements Initializable{
         acu=setAcu();
         cmp=setCompressor();
         addAcul(root3D);
-        root3D.getChildren().addAll(acu,cmp);
+        Box b=new Box(1,1,1);
+        b.translateYProperty().set(-0.4);
+        root3D.getChildren().addAll(acu,cmp,b);
 		System.out.println("GGG");
     }
     private void addAcul(Group root) {
@@ -299,14 +343,15 @@ public class MainController implements Initializable{
     	int z=(i==2 || i==0)?-1:1;
     	int deg=(i==2)?0:(i==3)?180:(i==0)?90:270;
  		PhongMaterial material = new PhongMaterial();
+ 		//this.floor.getTranslateY()-0.75-(acuh+1)/2
         material.setDiffuseColor(Color.valueOf("#b0b2b4"));
-        Box box=drawBox(0,acuw,acuh,1,0,wall.getTranslateY(),-(acud-0.5)/2);
+        Box box=drawBox(0,acuw,acuh-1,1,0,this.floor.getTranslateY()-0.75-(acuh/2),-(acud)/2 + 0.5);
 	    Cylinder c=drawCylinder(0,acuw,box.getTranslateY()-box.getHeight()/2,box.getTranslateZ(),90);
 		Cylinder c1=drawCylinder(0,acuw,box.getTranslateY()+box.getHeight()/2,box.getTranslateZ(),90);
-		Box box1=drawBox(0,acuw,0.3,acud,0,(box.getTranslateY()-box.getHeight()/2-0.5)+0.3/2,box.getTranslateZ()+acud/2);
-		Box box2=drawBox(0,acuw,0.3,acud,0,(box.getTranslateY()+box.getHeight()/2+0.5)-0.3/2,box.getTranslateZ()+acud/2);
-		Box box3=drawBox(0,0.3,acuh+1,acud,(box.getTranslateX()-box.getWidth()/2)+0.3/2,box.getTranslateY(),box.getTranslateZ()+acud/2);
-		Box box4=drawBox(0,0.3,acuh+1,acud,(box.getTranslateX()+box.getWidth()/2)-0.3/2,box.getTranslateY(),box.getTranslateZ()+acud/2);
+		Box box1=drawBox(0,acuw,0.3,acud-0.5,0,(box.getTranslateY()-box.getHeight()/2-0.5)+0.3/2,box.getTranslateZ()+(acud-0.5)/2);
+		Box box2=drawBox(0,acuw,0.3,acud-0.5,0,(box.getTranslateY()+box.getHeight()/2+0.5)-0.3/2,box.getTranslateZ()+(acud-0.5)/2);
+		Box box3=drawBox(0,0.3,acuh,acud-0.5,(box.getTranslateX()-box.getWidth()/2)+0.3/2,box.getTranslateY(),box.getTranslateZ()+(acud-0.5)/2);
+		Box box4=drawBox(0,0.3,acuh,acud-0.5,(box.getTranslateX()+box.getWidth()/2)-0.3/2,box.getTranslateY(),box.getTranslateZ()+(acud-0.5)/2);
 		Image icon=new Image("/resources/power-on .png");
 	    ImageView img=new ImageView(icon);
 	    img.setFitWidth(0.5);
@@ -325,17 +370,21 @@ public class MainController implements Initializable{
 	    acu.getChildren().addAll(box,c,c1,box1,box2,box3,box4,img,fl);
 	    acu.setRotationAxis(Rotate.Y_AXIS);
 	    acu.setRotate(deg);
-
+       
 	    if(i==2 || i==3) {
-	    	acu.translateZProperty().set(wall.getTranslateZ()+((acud+0.5+this.wall)/2)*z);
+	    	acu.translateZProperty().set(wall.getTranslateZ()+((acud+this.wall)/2)*z);
 	    	
 	    }else if(i==0 || i ==1) {
 	    	acu.translateXProperty().set(wall.getTranslateX()+((acud+0.5+this.wall)/2)*z);
 	    }
-	    System.out.println("acu : "+wall.getTranslateZ());
-	    acu.setOnMouseClicked(e->{
+	    
+	    //acu.translateYProperty().set((height+0.75)/-2 + (acuh+1)/2);
+	    acu.translateYProperty().set((height)/-2 + (acuh)/2);
+	    System.out.println("acu : "+acu.getTranslateY()+" "+(this.floor.getTranslateY()-0.75));
+	    acu.setOnMousePressed(e->{
 	    	   btnevap.requestFocus();
 	       });
+	    
     	return  acu;
 	    //return new Node[] {acu,l,r,b,img,pLight};
     }
@@ -445,20 +494,20 @@ public class MainController implements Initializable{
     	//whlxyz
     	
     	
-    	Box platform= prepareBox(roomWidth+15,roomLength+15,0.5,0,0,0,0);
-		Box floor= prepareBox(roomWidth,roomLength,1.5,0,0.4,0,1);
-		Box wall1= prepareBox(wall,roomLength+wall*2,roomHieght+0.75,(roomWidth/2)+wall/2,roomHieght/2*-1,0,0);
-		Box wall2= prepareBox(wall,roomLength+wall*2,roomHieght+0.75,(roomWidth/2*-1)-wall/2,roomHieght/2*-1,0,0);
-		Box wall3= prepareBox(roomWidth,wall,roomHieght+0.75,0,roomHieght/2*-1,roomLength/2+wall/2,0);
-		Box wall4= prepareBox(roomWidth,wall,roomHieght+0.75,0,roomHieght/2*-1,roomLength/-2-wall/2,0);
-		Box wall5= prepareBox(wall,roomLength+wall*4,roomHieght+0.75,wall1.getTranslateX()+wall,roomHieght/2*-1,0,2);
-		Box wall6= prepareBox(wall,roomLength+wall*4,roomHieght+0.75,wall2.getTranslateX()-wall,roomHieght/2*-1,0,2);
-		Box wall7= prepareBox(roomWidth+wall*4,wall,roomHieght+0.75,0,roomHieght/2*-1,wall3.getTranslateZ()+wall,2);
-		Box wall8= prepareBox(roomWidth+wall*4,wall,roomHieght+0.75,0,roomHieght/2*-1,wall4.getTranslateZ()-wall,2);
-		Box wall9= prepareBox(wall,roomLength+wall*2,0.1,(roomWidth/2)+wall/2,roomHieght*-1-0.75/2,0,2);
-		Box wall10= prepareBox(wall,roomLength+wall*2,0.1,(roomWidth/2*-1)-wall/2,roomHieght*-1-0.75/2,0,2);
-		Box wall11=prepareBox(roomWidth,wall,0.1,0,roomHieght*-1-0.75/2,roomLength/2+wall/2,2);
-		Box wall12= prepareBox(roomWidth,wall,0.1,0,roomHieght*-1-0.75/2,roomLength/-2-wall/2,2);
+    	Box platform= prepareBox(roomWidth+10,roomLength+10,0.5,0,0.76,0,0);
+		Box floor= prepareBox(roomWidth,roomLength,1.5,0,0.75,0,1);
+		Box wall1= prepareBox(wall,roomLength+wall*2,roomHieght,(roomWidth/2)+wall/2,roomHieght/2*-1,0,0);
+		Box wall2= prepareBox(wall,roomLength+wall*2,roomHieght,(roomWidth/2*-1)-wall/2,roomHieght/2*-1,0,0);
+		Box wall3= prepareBox(roomWidth,wall,roomHieght,0,roomHieght/2*-1,roomLength/2+wall/2,0);
+		Box wall4= prepareBox(roomWidth,wall,roomHieght,0,roomHieght/2*-1,roomLength/-2-wall/2,0);
+		Box wall5= prepareBox(wall,roomLength+wall*4,roomHieght,wall1.getTranslateX()+wall,roomHieght/2*-1,0,2);
+		Box wall6= prepareBox(wall,roomLength+wall*4,roomHieght,wall2.getTranslateX()-wall,roomHieght/2*-1,0,2);
+		Box wall7= prepareBox(roomWidth+wall*4,wall,roomHieght,0,roomHieght/2*-1,wall3.getTranslateZ()+wall,2);
+		Box wall8= prepareBox(roomWidth+wall*4,wall,roomHieght,0,roomHieght/2*-1,wall4.getTranslateZ()-wall,2);
+		Box wall9= prepareBox(wall,roomLength+wall*2,0.1,(roomWidth/2)+wall/2,roomHieght*-1,0,2);
+		Box wall10= prepareBox(wall,roomLength+wall*2,0.1,(roomWidth/2*-1)-wall/2,roomHieght*-1,0,2);
+		Box wall11=prepareBox(roomWidth,wall,0.1,0,roomHieght*-1,roomLength/2+wall/2,2);
+		Box wall12= prepareBox(roomWidth,wall,0.1,0,roomHieght*-1,roomLength/-2-wall/2,2);
 		
 		n[0]=wall1;
 		n[1]=wall2;
@@ -468,7 +517,7 @@ public class MainController implements Initializable{
 		n2[1]=wall6;
 		n2[2]=wall7;
 		n2[3]=wall8;
-		
+		this.floor=floor;
 		return new Node[] { platform,floor,wall1,wall2,wall3,wall4,wall5,wall6,wall7,wall8,wall9,wall10,wall11,wall12};
 	}
 	private Node[] prepareLightSource() {
