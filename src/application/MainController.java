@@ -38,6 +38,7 @@ public class MainController implements Initializable{
 	private double anchorAngleX=0;
 	private double anchorAngleY=0;
 	private double prevPointY=0;
+	private double prevPointXZ=0;
 	private double tempX=0;
 	private double tempY=0;
 	private double roomHieght=20;
@@ -64,14 +65,14 @@ public class MainController implements Initializable{
     private double comph=6.5 ;
     private double compd=3.3;
     private double wall=2.032/2;
-    private double selectedcomp=1;
+    private double selectedcomp=0;
 	@FXML
     private SubScene threeDModel;
 	
 	@FXML 
     private BorderPane borderPane;
 	@FXML 
-    private TextField txtlength,txtwidth,txtheight,txtevapx,txtevapy,txtcompx,txtcompy;
+    private TextField txtlength,txtwidth,txtheight,txtacul,txtacut,txtacur,txtacub,txtcompx,txtcompy;
     
 	@FXML
     private Button btndim;
@@ -115,6 +116,7 @@ public class MainController implements Initializable{
         initMouseControl(root3D, threeDModel,camera);
         initializeLocationAcu();
         initAcuDragged();
+        setLoc();
     	btndim.setOnMouseClicked(event -> {
     		width=Double.parseDouble(txtwidth.getText())*10;
     		length=Double.parseDouble(txtlength.getText())*10;
@@ -155,6 +157,7 @@ public class MainController implements Initializable{
 		anchorX=x;
 		anchorY=y;
 		this.prevPointY=y;
+		this.prevPointXZ=x;
 		if(sc==0) {
 			tempX=acuX.get();
 			tempY=acuY.get();
@@ -183,42 +186,40 @@ public class MainController implements Initializable{
     		cmp.translateZProperty().bind(compX);
     	}
     	
-    	acu.setOnMouseDragExited(e->{
-    		System.out.println("SDfsdfsf");
-    	});
+    	
     	acu.setOnMouseDragged(e->{
-    		double boundx = width/2*i-acuw/2*i;
-        	double boundz = length/2*i-acuw/2*i;
         	if(selectedcomp==0) {
         		
             	double newX=tempX-(anchorX-e.getSceneX())/10*i;
             	double newY=tempY-(anchorY-e.getSceneY())/10;
-            	/**
-            	 * if((newX>boundx*-1 && newX<boundx+0.1 && selectedwall==2) || (newX>boundx && newX<boundx*-1+0.1 && selectedwall==3) ) {
-            		acuX.set(newX);
-            	}else if((newX>boundz*-1 && newX<boundz+0.1 && selectedwall==1) || (newX>boundz && newX<boundz*-1+0.1 && selectedwall==0)) {
-            		acuX.set(newX);
-            	}
-            	 */
+            	double leftBound=(selectedwall==2 || selectedwall==3)?n[1].getTranslateX()+wall/2 + acuw/2:n[2].getTranslateZ()-wall/2 - acuw/2;
+            	double rightBound=(selectedwall==2 || selectedwall==3)?n[0].getTranslateX()-wall/2 - acuw/2:n[3].getTranslateZ()+wall/2 + acuw/2;
+            	boolean conA=(selectedwall==2)?newX<rightBound:(selectedwall==3)?newX>leftBound:(selectedwall==0)?newX>rightBound:newX<leftBound;
+            	boolean conB=(selectedwall==2)?acu.getTranslateX()>leftBound:(selectedwall==3)?acu.getTranslateX()<rightBound:(selectedwall==0)?acu.getTranslateZ()<leftBound:acu.getTranslateZ()>rightBound;
+            	boolean conC=(selectedwall==2)?newX>leftBound:(selectedwall==3)?newX<rightBound:(selectedwall==0)?newX<leftBound:newX>rightBound;
+            	boolean conD=(selectedwall==2)?acu.getTranslateX()<rightBound:(selectedwall==3)?acu.getTranslateX()>leftBound:(selectedwall==0)?acu.getTranslateZ()>rightBound:acu.getTranslateZ()<leftBound;
+            		if(this.prevPointXZ>e.getSceneX() &&conA) {
+            			if(conB) {
+               			acuX.set(newX);
+               		}else {
+               			acuX.set((selectedwall==2||selectedwall==0)?leftBound:rightBound);
+               		}
+            		}else if(this.prevPointXZ<e.getSceneX() && conC) {
+            			if(conD) {
+               			acuX.set(newX);
+               		}else {
+               			acuX.set((selectedwall==2||selectedwall==0)?rightBound:leftBound);
+               		}
+            		}
+            		/*
+            		 *
+            		 * 
+            		*/
+            		
             	
-            	if(selectedwall==2 || selectedwall==3) {
-            		if(newX-acuw/2 >= n[1].getTranslateX()+this.wall/2 && newX+acuw/2 <= n[0].getTranslateX()-this.wall/2) {
-                		acuX.set(newX);
-                	}
-            	}else {
-            		if(newX-acuw/2 >= n[3].getTranslateZ()+this.wall/2 && newX+acuw/2 <= n[2].getTranslateZ()-this.wall/2) {
-                		acuX.set(newX);
-                	}
-            	}
             	
             	acu.translateYProperty().bind(acuY);
-            	/**
-            	 * if(((Math.round((newY-3.2/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0))>=0 && ((Math.round((newY+3.2/2)*10.0)/10.0)+(Math.round(((height-0.75)/-2)*10.0)/10.0))<=0) {
-            		
-            	}
-            	 */
-            	
-            		    //removing the second condition sa main ifs will result a wierd snapping effect sa acu
+            	//removing the second condition sa main ifs will result a wierd snapping effect sa acu
             			if(this.prevPointY<e.getSceneY() && newY>n[selectedwall].getTranslateY()-height/2+acuh) {
             				if(acu.getTranslateY()<0) {
                         		acuY.set(newY);
@@ -234,14 +235,10 @@ public class MainController implements Initializable{
             					}
                 			
             			}
-            		
-            	
-            			this.prevPointY=e.getSceneY();	
-            	System.out.println(acu.getTranslateY()+" "+(this.floor.getTranslateY()-0.75));
-            	 
-            	
-        	}
-        	
+            			
+            	}
+        	this.prevPointY=e.getSceneY();	
+        	this.prevPointXZ=e.getSceneX();	
         	setLoc();
         	});
     	cmp.setOnMouseDragged(e->{
@@ -257,9 +254,28 @@ public class MainController implements Initializable{
             		compX.set(newX);
             	}
             	cmp.translateYProperty().bind(compY);
-            	if(((Math.round((newY-comph/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0))>=0 && ((Math.round((newY+comph/2)*10.0)/10.0)+(Math.round(((height-0.75)/-2)*10.0)/10.0))<=0) {
+            	/**
+            	 * if(((Math.round((newY-comph/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0))>=0 && ((Math.round((newY+comph/2)*10.0)/10.0)+(Math.round(((height-0.75)/-2)*10.0)/10.0))<=0) {
             		compY.set(newY);
             	}
+            	 */
+            	if(this.prevPointY<e.getSceneY() && newY>n2[selectedwall].getTranslateY()-height/2+acuh) {
+    				if(cmp.getTranslateY()<0) {
+    					compY.set(newY);
+    					}
+        			else {
+        				compY.set(0);
+        			}
+    			}else if(this.prevPointY>e.getSceneY() && newY<0) {
+    				if(cmp.getTranslateY()>n2[selectedwall].getTranslateY()-height/2+comph) {
+    					compY.set(newY);
+    					}else {
+    						compY.set(n[selectedwall].getTranslateY()-height/2+comph);
+    					}
+        			
+    			}
+            	this.prevPointY=e.getSceneY();	
+            	this.prevPointXZ=e.getSceneX();	
             	setLoc();
         	}
         	
@@ -268,37 +284,51 @@ public class MainController implements Initializable{
     	
     	acu.setOnMouseReleased(e->{
     		compdragged=false;
+    		this.prevPointXZ=0;
     	});
     	cmp.setOnMouseReleased(e->{
     		compdragged=false;
+    		this.prevPointXZ=0;
     	});
     }
-    //this line -0.04 has no exact reference but rather a result of trial and error in choosing b
+   
     private void setLoc() {
-    	if(selectedcomp==0) {
-    		double cux=(selectedwall==2 || selectedwall==3)?(acu.getTranslateX()-width/-2-acuw/2)/10:(acu.getTranslateZ()-length/-2-acuw/2)/10;
+    	
+    		if(selectedwall > 1) {
+    			txtacul.setText(String.format("%.3f",(selectedwall==2)?(width-acuw)/20 + acu.getTranslateX()/10:(width-acuw)/20 - acu.getTranslateX()/10));
+    			txtacur.setText(String.format("%.3f",(selectedwall==3)?(width-acuw)/20 + acu.getTranslateX()/10:(width-acuw)/20 - acu.getTranslateX()/10 ));
+    		}else {
+    			txtacul.setText(String.format("%.3f",(selectedwall==1)?(length-acuw)/20 + acu.getTranslateZ()/10:(length-acuw)/20 - acu.getTranslateZ()/10));
+    			txtacur.setText(String.format("%.3f",(selectedwall==2)?(length-acuw)/20 + acu.getTranslateZ()/10:(length-acuw)/20 - acu.getTranslateZ()/10 ));
+    		}
+    		txtacut.setText(String.format("%.2f",height/10 - Math.abs((acu.getTranslateY()-acuh)/10)));
+    		txtacub.setText(String.format("%.2f",Math.abs(acu.getTranslateY()/10)));
+    		
+    		/*
+    		 * double cux=(selectedwall==2 || selectedwall==3)?(acu.getTranslateX()-width/-2-acuw/2)/10:(acu.getTranslateZ()-length/-2-acuw/2)/10;
      	    txtevapx.setText(String.format("%.2f",cux));
      	    double cuy=(((Math.round((acu.getTranslateY()-3.2/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0)))/10;
      	    
-     	    txtevapy.setText(String.format("%.2f", cuy));
-    	}else {
+     	    txtevapy.setText(String.format("%.2f", cuy));*/
+    	
     		double cux=(selectedwall==2 || selectedwall==3)?(cmp.getTranslateX()-(width+wall*4)/-2-compw/2)/10:(cmp.getTranslateZ()-(length+wall*4)/-2-compw/2)/10;
     		txtcompx.setText(String.format("%.2f",cux));
      	    double cuy=(((Math.round((cmp.getTranslateY()-comph/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0)))/10;
      	   txtcompy.setText(String.format("%.2f", cuy));
-    	}
+    	
     }
     private void initializeLocationAcu()
     {
     	this.acuX=new SimpleDoubleProperty(0);
     	this.acuY=new SimpleDoubleProperty((height)/-2+acuh/2);
-    	this.compX=new SimpleDoubleProperty((-width/-2-compw/2)/10);
-    	this.compY=new SimpleDoubleProperty(0);
+    	this.compX=new SimpleDoubleProperty(0);
+    	this.compY=new SimpleDoubleProperty((height)/-2+comph/2);
     	
     	setLoc();
     }
     private void initlocation() {
-    	double evapx =Double.parseDouble(txtevapx.getText())*10;
+    	/**
+    	 * double evapx =Double.parseDouble(txtevapx.getText())*10;
 	  	double evapy =Double.parseDouble(txtevapy.getText())*10;
     	if(selectedwall==2 || selectedwall ==3) {
     		
@@ -307,6 +337,7 @@ public class MainController implements Initializable{
     		acu.translateZProperty().set((n[selectedwall].getTranslateZ()-length/2+acuw/2)+evapx);
     	}
     	acu.translateYProperty().set((height)/-2+1.25+evapy);
+    	 */
     }
     
     private void loadModel(Group root3D) {
@@ -317,9 +348,7 @@ public class MainController implements Initializable{
         acu=setAcu();
         cmp=setCompressor();
         addAcul(root3D);
-        Box b=new Box(1,1,1);
-        b.translateYProperty().set(-0.4);
-        root3D.getChildren().addAll(acu,cmp,b);
+        root3D.getChildren().addAll(acu,cmp);
 		System.out.println("GGG");
     }
     private void addAcul(Group root) {
@@ -380,7 +409,7 @@ public class MainController implements Initializable{
 	    
 	    //acu.translateYProperty().set((height+0.75)/-2 + (acuh+1)/2);
 	    acu.translateYProperty().set((height)/-2 + (acuh)/2);
-	    System.out.println("acu : "+acu.getTranslateY()+" "+(this.floor.getTranslateY()-0.75));
+	   
 	    acu.setOnMousePressed(e->{
 	    	   btnevap.requestFocus();
 	       });
@@ -394,7 +423,8 @@ public class MainController implements Initializable{
     	Node wall=this.n2[i];
     	int z=(i==2 || i==0)?-1:1;
     	int deg=(i==2)?180:(i==3)?0:(i==0)?270:90;
-        Box box=drawBox(1,compw,comph-1,1,0,(height+0.75)/-2+0.5,-(compd-0.5)/2);
+        Box box=drawBox(1,compw,comph-1,1,0,this.floor.getTranslateY()-0.75-(comph/2),-(compd-0.5)/2);
+       
 	    Cylinder c=drawCylinder(1,compw,box.getTranslateY()-box.getHeight()/2,box.getTranslateZ(),90);
 		Cylinder c1=drawCylinder(1,compw,box.getTranslateY()+box.getHeight()/2,box.getTranslateZ(),90);
         Box box1=drawBox(1,compw,1,compd,0,(box.getTranslateY()-box.getHeight()/2-0.5)+1/2+0.5,box.getTranslateZ()+compd/2);
@@ -424,6 +454,7 @@ public class MainController implements Initializable{
 	    }else if(i==0 || i ==1) {
 	    	compressor.translateXProperty().set(wall.getTranslateX()-(compd+0.55+this.wall)/2*z);
 	    }
+	    compressor.translateYProperty().set((height)/-2 + (acuh)/2);
 	    compressor.setOnMouseClicked(e->{
 	    	   btnevap.requestFocus();
 	       });

@@ -171,8 +171,12 @@
                                  <children>
                                     <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                                        <children>
-                                          <Label text="X : " />
-                                          <TextField fx:id="txtevapx" focusTraversable="false" prefWidth="60.0" text="2.5">
+                                          <Label text="L : ">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </Label>
+                                          <TextField fx:id="txtacul" focusTraversable="false" prefWidth="60.0" text="0">
                                              <font>
                                                 <Font size="13.0" />
                                              </font>
@@ -182,12 +186,34 @@
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
                                        <children>
-                                          <Label text="Y : ">
+                                          <Label text="T : ">
                                              <font>
                                                 <Font size="12.5" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="txtevapy" focusTraversable="false" prefWidth="60.0" text="2.5">
+                                          <TextField fx:id="txtacut" focusTraversable="false" prefWidth="60.0" text="0">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </TextField>
+                                          <Label text="m" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                       <children>
+                                          <Label text="R : " />
+                                          <TextField fx:id="txtacur" focusTraversable="false" prefWidth="60.0" text="0">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </TextField>
+                                          <Label text="m" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                       <children>
+                                          <Label text="B : " />
+                                          <TextField fx:id="txtacub" focusTraversable="false" prefWidth="60.0" text="0">
                                              <font>
                                                 <Font size="13.0" />
                                              </font>
