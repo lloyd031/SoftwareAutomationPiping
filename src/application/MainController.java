@@ -15,9 +15,11 @@ import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SubScene;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
@@ -60,7 +62,6 @@ public class MainController implements Initializable{
     private double acuw=10.5;
     private double acuh=3.2;
     private double acud=2.5;
-    private Box floor=null;
     private double compw=8.7;
     private double comph=6.5 ;
     private double compd=3.3;
@@ -72,12 +73,13 @@ public class MainController implements Initializable{
 	@FXML 
     private BorderPane borderPane;
 	@FXML 
-    private TextField txtlength,txtwidth,txtheight,txtacul,txtacut,txtacur,txtacub,txtcompl,txtcompw,txtcompd,txtcompt,txtcompr,txtcomp;
+    private TextField txtlength,txtwidth,txtheight,txtacul,txtacut,txtacur,txtacub,txtcompl,txtcompw,txtcompd,txtcompt,txtcompr,txtcomph,txtcompb;
 	@FXML 
     private TextField txtevapw,txtevaph,txtevapd;
 	@FXML
     private Button btndim,btnevap,btncomp;
-	
+	@FXML
+	private TitledPane acrdncomploc,acrdnaculoc;
 
 	@FXML
 	private ComboBox<String> cbboxref;
@@ -113,7 +115,8 @@ public class MainController implements Initializable{
         initMouseControl(root3D, threeDModel,camera);
         initializeLocationAcu();
         initAcuDragged();
-        setLoc();
+        setAcuLoc();
+        setCompLoc();
     	btndim.setOnMouseClicked(event -> {
     		width=Double.parseDouble(txtwidth.getText())*10;
     		length=Double.parseDouble(txtlength.getText())*10;
@@ -138,7 +141,13 @@ public class MainController implements Initializable{
             initAcuDragged();
             root3D.getChildren().addAll(acu,cmp);
         });
-       
+    	acrdncomploc.setOnMouseClicked(e->{
+    		selectedcomp=1;
+    	});
+    	acrdnaculoc.setOnMouseClicked(e->{
+    		selectedcomp=0;
+    	});
+    
         
     	initKeyPressed(root3D);
       
@@ -230,11 +239,11 @@ public class MainController implements Initializable{
             	}
         	this.prevPointY=e.getSceneY();	
         	this.prevPointXZ=e.getSceneX();	
-        	setLoc();
+        	setAcuLoc();
         	});
     	cmp.setOnMouseDragged(e->{
-    		double leftBound=(selectedwall>1)?width/2+wall*2:length/-2-wall*2;
-    		double rightBound=(selectedwall>1)?width/-2 - wall*2:length/-2 - wall*2;
+    		//double leftBound=(selectedwall>1)?width/2+wall*2:length/-2-wall*2;
+    		//double rightBound=(selectedwall>1)?width/-2 - wall*2:length/-2 - wall*2;
         	if(selectedcomp==1) {
         		
             	double newX=tempX+(anchorX-e.getSceneX())/10*i;
@@ -242,71 +251,9 @@ public class MainController implements Initializable{
             	cmp.translateYProperty().bind(compY);
             	compX.set(newX);
             	compY.set(newY);
-            	/**
-            	 * if((newX>boundx*-1 && newX<boundx && selectedwall==2) || (newX>boundx && newX<boundx*-1 && selectedwall==3) ) {
-            		compX.set(newX);
-            	}else if((newX>boundz*-1 && newX<boundz && selectedwall==1) || (newX>boundz && newX<boundz*-1 && selectedwall==0)) {
-            		compX.set(newX);
-            	}
-            	boolean conA=(selectedwall==2)?newX>rightBound+compw/2:newX<leftBound-compw/2;
-            	boolean conB=(selectedwall==2)?newX<leftBound-compw/2:newX>rightBound+compw/2;
-            	boolean conC=(selectedwall==2)?cmp.getTranslateX()+compw/2<leftBound:cmp.getTranslateX()-compw/2>rightBound;
-            	boolean conD=(selectedwall==2)?cmp.getTranslateX()-compw/2>rightBound:cmp.getTranslateX()+compw/2<leftBound;
             	
-            	if(this.prevPointXZ>e.getSceneX() && conA) {
-             		
-             		if(conC) {
-                 		compX.set(newX);
-                 	}else {
-                 		compX.set((selectedwall==2)?leftBound-compw/2:rightBound+compw/2);
-                 	}
-             	}else if(this.prevPointXZ<e.getSceneX() &&conB) {
-             		if(conD) {
-                 		compX.set(newX);
-                 	}else {
-                 		compX.set((selectedwall==2)?rightBound+compw/2:leftBound-compw/2);
-                 	}
-             	}
-             	
-             	 if(this.prevPointXZ>e.getSceneX()) {
-             		
-             		if(cmp.getTranslateZ()-compw/2>leftBound) {
-                 		compX.set(newX);
-                 	}else {
-                 		compX.set((selectedwall==2 || selectedwall==0)?leftBound+compw/2:rightBound+compw/2);
-                 	}
-             	}else if(this.prevPointXZ<e.getSceneX() ) {
-             		if(cmp.getTranslateZ()+compw/2<leftBound*-1 ){
-                 		compX.set(newX);
-                 	}else {
-                 		//compX.set((selectedwall==2)?rightBound+compw/2:leftBound-compw/2);
-                 	}
-             	}
-             	if(this.prevPointY<e.getSceneY() && newY>n2[selectedwall].getTranslateY()-height/2+comph) {
-    				if(cmp.getTranslateY()<0) {
-    					compY.set(newY);
-    					}
-        			else {
-        				compY.set(0);
-        			}
-    			}else if(this.prevPointY>e.getSceneY() && newY<0) {
-    				if(cmp.getTranslateY()>n2[selectedwall].getTranslateY()-height/2+comph) {
-    					compY.set(newY);
-    					}else {
-    						compY.set(n[selectedwall].getTranslateY()-height/2+comph);
-    					}
-        			
-    			}
-            	this.prevPointY=e.getSceneY();	
-            	this.prevPointXZ=e.getSceneX();	
-            	 */
-            	/**
-            	 * if(((Math.round((newY-comph/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0))>=0 && ((Math.round((newY+comph/2)*10.0)/10.0)+(Math.round(((height-0.75)/-2)*10.0)/10.0))<=0) {
-            		compY.set(newY);
-            	}
-            	 */
             	
-            	setLoc();
+            	setCompLoc();
         	}
         	
         	});
@@ -322,9 +269,10 @@ public class MainController implements Initializable{
     	});
     }
    
-    private void setLoc() {
+    private void setAcuLoc() {
     	
-    		if(selectedwall > 1) {
+		
+			if(selectedwall > 1) {
     			txtacul.setText(String.format("%.3f",(selectedwall==2)?(width-acuw)/20 + acu.getTranslateX()/10:(width-acuw)/20 - acu.getTranslateX()/10));
     			txtacur.setText(String.format("%.3f",(selectedwall==3)?(width-acuw)/20 + acu.getTranslateX()/10:(width-acuw)/20 - acu.getTranslateX()/10 ));
     		}else {
@@ -334,46 +282,54 @@ public class MainController implements Initializable{
     		txtacut.setText(String.format("%.2f",height/10 - Math.abs((acu.getTranslateY()-acuh)/10)));
     		txtacub.setText(String.format("%.2f",Math.abs(acu.getTranslateY()/10)));
     		
-    		/*
-    		 * double cux=(selectedwall==2 || selectedwall==3)?(acu.getTranslateX()-width/-2-acuw/2)/10:(acu.getTranslateZ()-length/-2-acuw/2)/10;
-     	    txtevapx.setText(String.format("%.2f",cux));
-     	    double cuy=(((Math.round((acu.getTranslateY()-3.2/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0)))/10;
-     	    
-     	    txtevapy.setText(String.format("%.2f", cuy));*/
-    	
-    		
-    	
-    }
+		
+		/*
+		 * double cux=(selectedwall==2 || selectedwall==3)?(acu.getTranslateX()-width/-2-acuw/2)/10:(acu.getTranslateZ()-length/-2-acuw/2)/10;
+ 	    txtevapx.setText(String.format("%.2f",cux));
+ 	    double cuy=(((Math.round((acu.getTranslateY()-3.2/2)*10.0)/10.0)-(Math.round(((height+0.75)/-2)*10.0)/10.0)))/10;
+ 	    
+ 	    txtevapy.setText(String.format("%.2f", cuy));*/
+	
+		
+	
+}
+    private void setCompLoc() {
+    		if(selectedwall > 1) {
+    			txtcompr.setText(String.format("%.3f",(selectedwall==2)?(width+wall*4-compw)/20+cmp.getTranslateX()/10:(width+wall*4-compw)/20-cmp.getTranslateX()/10));
+    			txtcompl.setText(String.format("%.3f",(selectedwall==3)?(width+wall*4-compw)/20+cmp.getTranslateX()/10:(width+wall*4-compw)/20-cmp.getTranslateX()/10));
+    		}else {
+    			txtcompr.setText(String.format("%.3f",(selectedwall==1)?(length+wall*4-compw)/20+cmp.getTranslateZ()/10:(length+wall*4-compw)/20-cmp.getTranslateZ()/10));
+    			txtcompl.setText(String.format("%.3f",(selectedwall==0)?(length+wall*4-compw)/20+cmp.getTranslateZ()/10:(length+wall*4-compw)/20-cmp.getTranslateZ()/10));
+    		}
+			txtcompt.setText(String.format("%.2f",height/10 - Math.abs((cmp.getTranslateY()-comph)/10)));
+    		txtcompb.setText(String.format("%.2f",Math.abs(cmp.getTranslateY()/10)));
+}
     private void initializeLocationAcu()
     {
     	this.acuX=new SimpleDoubleProperty(0);
     	this.acuY=new SimpleDoubleProperty((height)/-2+acuh/2);
     	this.compX=new SimpleDoubleProperty(0);
     	this.compY=new SimpleDoubleProperty((height)/-2+comph/2);
-    	
-    	setLoc();
+    	setAcuLoc();
+    	setCompLoc();
     }
-    private void initlocation(DoubleProperty a,double bound, double val) {
-    	if(selectedcomp==0) {
-    		/**
-    		 * if(selectedwall > 1) {
-    			txtacul.setText(String.format("%.3f",(selectedwall==2)?(width-acuw)/20 + acu.getTranslateX()/10:(width-acuw)/20 - acu.getTranslateX()/10));
-    			txtacur.setText(String.format("%.3f",(selectedwall==3)?(width-acuw)/20 + acu.getTranslateX()/10:(width-acuw)/20 - acu.getTranslateX()/10 ));
-    		}else {
-    			txtacul.setText(String.format("%.3f",(selectedwall==1)?(length-acuw)/20 + acu.getTranslateZ()/10:(length-acuw)/20 - acu.getTranslateZ()/10));
-    			txtacur.setText(String.format("%.3f",(selectedwall==2)?(length-acuw)/20 + acu.getTranslateZ()/10:(length-acuw)/20 - acu.getTranslateZ()/10 ));
-    		}
-    		 */
-    		a.set( bound + val);
-    		setLoc();
+    private void initlocation(DoubleProperty a,double bound, String val, int mul) {
+    	try{a.set( bound + Double.parseDouble(val)*mul);
+    	updateLoc();
+    	}catch(Exception x) {
+    		updateLoc();
+		   }
     	}
+    private void updateLoc() {
+		if(selectedcomp==0) {
+		    		setAcuLoc();
+		   }else {
+		    		setCompLoc();
+		   }
     }
-    
     private void loadModel(Group root3D) {
-    	
-		root3D.getChildren().addAll(drawRoom(width,height,length));
+    	root3D.getChildren().addAll(drawRoom(width,height,length));
         root3D.getChildren().addAll(prepareLightSource());
-        
         acu=setAcu();
         cmp=setCompressor();
         addAcul(root3D);
@@ -393,9 +349,7 @@ public class MainController implements Initializable{
  		}
  		root.getChildren().add(acuL);
     }
-    
-    
-    private Group setAcu() {
+   private Group setAcu() {
     	int i=selectedwall;
     	Node wall=this.n[i];
     	int z=(i==2 || i==0)?-1:1;
@@ -403,7 +357,7 @@ public class MainController implements Initializable{
  		PhongMaterial material = new PhongMaterial();
  		//this.floor.getTranslateY()-0.75-(acuh+1)/2
         material.setDiffuseColor(Color.valueOf("#b0b2b4"));
-        Box box=drawBox(0,acuw,acuh-1,1,0,this.floor.getTranslateY()-0.75-(acuh/2),-(acud)/2 + 0.5);
+        Box box=drawBox(0,acuw,acuh-1,1,0,-(acuh/2),-(acud)/2 + 0.5);
 	    Cylinder c=drawCylinder(0,acuw,box.getTranslateY()-box.getHeight()/2,box.getTranslateZ(),90);
 		Cylinder c1=drawCylinder(0,acuw,box.getTranslateY()+box.getHeight()/2,box.getTranslateZ(),90);
 		Box box1=drawBox(0,acuw,0.3,acud-0.5,0,(box.getTranslateY()-box.getHeight()/2-0.5)+0.3/2,box.getTranslateZ()+(acud-0.5)/2);
@@ -428,38 +382,28 @@ public class MainController implements Initializable{
 	    acu.getChildren().addAll(box,c,c1,box1,box2,box3,box4,img,fl);
 	    acu.setRotationAxis(Rotate.Y_AXIS);
 	    acu.setRotate(deg);
-       
-	    if(i==2 || i==3) {
+        if(i==2 || i==3) {
 	    	acu.translateZProperty().set(wall.getTranslateZ()+((acud+this.wall)/2)*z);
-	    	
 	    }else if(i==0 || i ==1) {
 	    	acu.translateXProperty().set(wall.getTranslateX()+((acud+this.wall)/2)*z);
 	    }
-	    
-	    //acu.translateYProperty().set((height+0.75)/-2 + (acuh+1)/2);
 	    acu.translateYProperty().set((height)/-2 + (acuh)/2);
-	   
-	    
-	    
-    	return  acu;
-	    //return new Node[] {acu,l,r,b,img,pLight};
+	    return  acu;
     }
- 
-    private Group setCompressor() {
+   	private Group setCompressor() {
     	int i=selectedwall;
     	Node wall=this.n2[i];
     	int z=(i==2 || i==0)?-1:1;
     	int deg=(i==2)?180:(i==3)?0:(i==0)?270:90;
-        Box box=drawBox(1,compw,comph-1,1,0,this.floor.getTranslateY()-0.75-(comph/2),-(compd-0.5)/2);
-       
-	    Cylinder c=drawCylinder(1,compw,box.getTranslateY()-box.getHeight()/2,box.getTranslateZ(),90);
+        Box box=drawBox(1,compw,comph-1,1,0,-(comph/2),-compd/2 + 0.5);
+        Cylinder c=drawCylinder(1,compw,box.getTranslateY()-box.getHeight()/2,box.getTranslateZ(),90);
 		Cylinder c1=drawCylinder(1,compw,box.getTranslateY()+box.getHeight()/2,box.getTranslateZ(),90);
-        Box box1=drawBox(1,compw,1,compd,0,(box.getTranslateY()-box.getHeight()/2-0.5)+1/2+0.5,box.getTranslateZ()+compd/2);
-        Box box2=drawBox(1,compw,1,compd,0,(box.getTranslateY()+box.getHeight()/2+0.5)-1/2-0.5,box.getTranslateZ()+compd/2);
-        Box box3=drawBox(2,0.3,comph-0.5,compd,(box.getTranslateX()-box.getWidth()/2)+0.2,box.getTranslateY(),box.getTranslateZ()+compd/2);
-		Box box4=drawBox(1,0.3,comph,compd,(box.getTranslateX()+box.getWidth()/2)-0.3/2,box.getTranslateY(),box.getTranslateZ()+compd/2);
-		Box box5=drawBox(1,0.3,comph-0.5,0.5,(box.getTranslateX()-box.getWidth()/2)+0.3/2,box.getTranslateY(),box.getTranslateZ()+compd-0.25);
-		Box box6=drawBox(1,0.3,comph-0.5,0.5,(box.getTranslateX()-box.getWidth()/2)+0.3/2,box.getTranslateY(),box.getTranslateZ()+compd/2);
+		Box box1=drawBox(1,compw,0.3,compd-0.5,0,(box.getTranslateY()-box.getHeight()/2-0.5)+0.3/2,box.getTranslateZ()+(compd-0.5)/2);
+		Box box2=drawBox(1,compw,0.3,compd-0.5,0,(box.getTranslateY()+box.getHeight()/2+0.5)-0.3/2,box.getTranslateZ()+(compd-0.5)/2);
+		Box box3=drawBox(0,0.3,comph-0.5,compd-0.5,(box.getTranslateX()-box.getWidth()/2)+0.3,box.getTranslateY(),box.getTranslateZ()+(compd-0.5)/2);
+		Box box4=drawBox(1,0.3,comph,compd-0.5,(box.getTranslateX()+box.getWidth()/2)-0.3/2,box.getTranslateY(),box.getTranslateZ()+(compd-0.5)/2);
+		Box box5=drawBox(1,0.3,comph-0.5,0.5,(box.getTranslateX()-box.getWidth()/2)+0.3/2,box.getTranslateY(),box.getTranslateZ()+(compd-0.5)-0.25);
+		Box box6=drawBox(1,0.3,comph-0.5,0.5,(box.getTranslateX()-box.getWidth()/2)+0.3/2,box.getTranslateY(),box.getTranslateZ()+(compd-0.5)/2);
 		Cylinder f=new Cylinder(2.5,1);
 		f.translateYProperty().set(box.getTranslateY());
 		f.translateXProperty().set(-1.5/2);
@@ -476,17 +420,13 @@ public class MainController implements Initializable{
 	    compressor.setRotationAxis(Rotate.Y_AXIS);
 	    compressor.setRotate(deg);
 	    if(i==2 || i==3) {
-	    	compressor.translateZProperty().set(wall.getTranslateZ()-(compd+0.55+this.wall)/2*z);
+	    	compressor.translateZProperty().set(wall.getTranslateZ()-(compd+this.wall)/2*z);
 	    	
 	    }else if(i==0 || i ==1) {
-	    	compressor.translateXProperty().set(wall.getTranslateX()-(compd+0.55+this.wall)/2*z);
+	    	compressor.translateXProperty().set(wall.getTranslateX()-(compd+this.wall)/2*z);
 	    }
-	    compressor.translateYProperty().set((height)/-2 + (acuh)/2);
-	    compressor.setOnMouseClicked(e->{
-	    	   btnevap.requestFocus();
-	       });
-	    
-    	return  compressor;
+	    compressor.translateYProperty().set((height)/-2 + acuh);
+	    return  compressor;
     }
 	private Box drawBox(int comp, double w, double h, double d, double x, double y, double z) {
 		PhongMaterial material = new PhongMaterial();
@@ -520,12 +460,9 @@ public class MainController implements Initializable{
 		c.setMaterial(material);
     	return c;
     }
-    
     private Box prepareBox(double width, double height, double length,double x, double y, double z, int floor) {
 		PhongMaterial material = new PhongMaterial();
-	
-		
-		if(floor==1) {
+	if(floor==1) {
 			material.setDiffuseMap(new Image(getClass().getResourceAsStream("/resources/wood.jpg")));
 			material.setSpecularColor(Color.WHITE);
 		}else if(floor==2)
@@ -567,16 +504,13 @@ public class MainController implements Initializable{
 		Box wall11=prepareBox(roomWidth,wall,0.1,0,roomHieght*-1,roomLength/2+wall/2,2);
 		Box wall12= prepareBox(roomWidth,wall,0.1,0,roomHieght*-1,roomLength/-2-wall/2,2);
 		
-		n[0]=wall1;
-		n[1]=wall2;
-		n[2]=wall3;
-		n[3]=wall4;
-		n2[0]=wall5;
-		n2[1]=wall6;
-		n2[2]=wall7;
-		n2[3]=wall8;
-		this.floor=floor;
-		return new Node[] { platform,floor,wall1,wall2,wall3,wall4,wall5,wall6,wall7,wall8,wall9,wall10,wall11,wall12};
+		Box[] wall= { wall1,wall2,wall3,wall4,wall5,wall6,wall7,wall8,wall9,wall10,wall11,wall12,platform,floor};
+		for(int i=0; i<4; i++) {
+			n[i]=wall[i];
+			n2[i]=wall[i+4];
+		}
+
+		return wall;
 	}
 	private Node[] prepareLightSource() {
 		AmbientLight amLight= new AmbientLight();
@@ -628,73 +562,48 @@ public class MainController implements Initializable{
 	private void initKeyPressed(Group g) {
 		txtacul.setOnKeyPressed(e->{
 	    	   double boundL=(selectedwall==2)?(width-acuw)/-2:(selectedwall==3)?(width-acuw)/2:(selectedwall==0)?(length-acuw)/2:(length-acuw)/-2;
-	     	   switch(e.getCode()) {
+	     	  	switch(e.getCode()) {
 	     	   case ENTER:
 	     		   if(txtacul.getText().equals("center")) {
 	     			  acuX.set(0);
-	     			  setLoc();
+	     			  setAcuLoc();
 	     		   }else {
-	     			   try {
-	     				  initlocation(acuX, boundL,Double.parseDouble(txtacul.getText())*10);
-	     			   }catch(Exception x) {
-	     				  System.out.println("invalid input");
-	      		    	setLoc();
-	     			   }
-	     		   }
+	     			initlocation(acuX, boundL,txtacul.getText(),10);
+	     			 }
 	     		   break;
 	     	    default:
 	     	    	break;
 	     	   }
 	        });
-	    	
-	    	txtacur.setOnKeyPressed(e->{
-	    		double boundR=(selectedwall==2)?(width-acuw)/2:(selectedwall==3)?(width-acuw)/-2:(selectedwall==0)?(length-acuw)/-2:(length-acuw)/2;
+	     txtacur.setOnKeyPressed(e->{
+	    	 	double boundR=(selectedwall==2)?(width-acuw)/2:(selectedwall==3)?(width-acuw)/-2:(selectedwall==0)?(length-acuw)/-2:(length-acuw)/2;
 	     	   switch(e.getCode()) {
 	     	   case ENTER:
 	     		  if(txtacur.getText().equals("center"))  {
 	     			  acuX.set(0);
-	     			  setLoc();
+	     			  setAcuLoc();
 	     		  }else {
-	     			 try {
-	     				initlocation(acuX, boundR,-Double.parseDouble(txtacur.getText())*10);}
-	      			  catch(Exception x) {
-	        		    	System.out.println("invalid input");
-	        		    	setLoc();
-	        		    };
-	     			 
-	     		  }
+	     				initlocation(acuX, boundR,txtacur.getText(),-10);
+	     			}
 	     		   
 	     		   break;
 	     	    default:
 	     	    	break;
 	     	   }
 	        });
-	    	txtacub.setOnKeyPressed(e->{
-	    		
-	    		
-	         		 
-	         	  
-	      		 switch(e.getCode()) {
+	     txtacub.setOnKeyPressed(e->{
+	    		switch(e.getCode()) {
 	        	   case ENTER:
 	        		   
 	        		   if(txtacub.getText().equals("center"))  {
 	        			   acu.translateYProperty().bind(acuY);
 	        			   acuY.set((height)/-2+acuh/2);
-	        			   setLoc();
+	        			   setAcuLoc();
 	        		   }else {
-	        			   try {
-	            				 
-	        				   acu.translateYProperty().bind(acuY);
-	                		   initlocation(acuY, 0,-Double.parseDouble(txtacub.getText())*10);}
-	            			  catch(Exception x) {
-	              		    	System.out.println("invalid input");
-	              		    	setLoc();
-	              		    };
-	        			   
-	        		   }
-	        		  
-	        		   
-	        		   break;
+	        			   acu.translateYProperty().bind(acuY);
+	        			   initlocation(acuY, 0,txtacub.getText(),-10);
+	        				}
+	        		 break;
 	        	    default:
 	        	    	break;
 	        	   }
@@ -702,29 +611,17 @@ public class MainController implements Initializable{
 	         });
 	    	
 	    	txtacut.setOnKeyPressed(e->{
-		      	   
-	      		  
-		      	  
-	      		 switch(e.getCode()) {
+		      	 switch(e.getCode()) {
 	      	   case ENTER:
 	      		 if(txtacut.getText().equals("center")) {
 	      			acu.translateYProperty().bind(acuY);
 	         		 acuY.set((height)/-2+acuh/2);
-	         		 setLoc();
+	         		 setAcuLoc();
 	      		 }else {
-	      			 try {
-	      				 
-	      				 acu.translateYProperty().bind(acuY);
-	        		    initlocation(acuY, -height + acuh,Double.parseDouble(txtacut.getText())*10);}
-	      			  catch(Exception x) {
-	        		    	System.out.println("invalid input");
-	        		    	setLoc();
-	        		    };
-	      			
-	      		 }
-	      		 
-	      		   
-	      		   break;
+	      			 	 acu.translateYProperty().bind(acuY);
+	        		     initlocation(acuY, -height + acuh,txtacut.getText(),10);
+	      				 }
+	      		 break;
 	      	    default:
 	      	    	break;
 	      	   
@@ -732,95 +629,188 @@ public class MainController implements Initializable{
 	         });
 	    	
 	    	txtevapw.setOnKeyPressed(e->{
+			      switch(e.getCode()) {
+		      	   case ENTER:
+		      		 
+		      			 try {
+		      				 
+		      				 this.acuw=Double.parseDouble(txtevapw.getText())*10;
+		      				 g.getChildren().remove(this.acu);
+		      				 this.acu=setAcu();
+		      				 g.getChildren().add(this.acu);
+		      				initAcuDragged();
+		      			 }
+		      			     
+		      			  catch(Exception x) {
+		        		    	setAcuLoc();
+		        		    };
+		      			break;
+		      	    default:
+		      	    	break;
+		      	   }
+		         });
+		    	txtevaph.setOnKeyPressed(e->{
+			      	 switch(e.getCode()) {
+		      	   case ENTER:
+		      		 try {
+		      				 
+		      				 this.acuh=Double.parseDouble(txtevaph.getText())*10;
+		      				 g.getChildren().remove(this.acu);
+		      				 this.acu=setAcu();
+		      				 g.getChildren().add(this.acu);
+		      				initAcuDragged();
+		      			 }
+		      			catch(Exception x) {
+		        		    	setAcuLoc();
+		        		    };
+		      		break;
+		      	    default:
+		      	    	break;
 		      	   
-	      		  
-		      	  
-	      		 switch(e.getCode()) {
-	      	   case ENTER:
-	      		 
-	      			 try {
-	      				 
-	      				 this.acuw=Double.parseDouble(txtevapw.getText())*10;
-	      				 g.getChildren().remove(this.acu);
-	      				 this.acu=setAcu();
-	      				 g.getChildren().add(this.acu);
-	      				initAcuDragged();
-	      			 }
-	      			     
-	      			  catch(Exception x) {
-	        		    	System.out.println("invalid input");
-	        		    	setLoc();
-	        		    };
-	      			
-	      		 
-	      		 
-	      		   
-	      		   break;
-	      	    default:
-	      	    	break;
-	      	   
-	      	   }
-	         });
-	    	txtevaph.setOnKeyPressed(e->{
-		      	   
-	      		  
-		      	  
-	      		 switch(e.getCode()) {
-	      	   case ENTER:
-	      		 
-	      			 try {
-	      				 
-	      				 this.acuh=Double.parseDouble(txtevaph.getText())*10;
-	      				 g.getChildren().remove(this.acu);
-	      				 this.acu=setAcu();
-	      				 g.getChildren().add(this.acu);
-	      				initAcuDragged();
-	      			 }
-	      			     
-	      			  catch(Exception x) {
-	        		    	System.out.println("invalid input");
-	        		    	setLoc();
-	        		    };
-	      			
-	      		 
-	      		 
-	      		   
-	      		   break;
-	      	    default:
-	      	    	break;
-	      	   
-	      	   }
-	         });
-	    	
-	    	txtevapd.setOnKeyPressed(e->{
-		      	   
-	      		  
-		      	  
-	      		 switch(e.getCode()) {
-	      	   case ENTER:
-	      		 
-	      			 try {
-	      				 
-	      				 this.acud=Double.parseDouble(txtevapd.getText())*10;
-	      				 g.getChildren().remove(this.acu);
-	      				 this.acu=setAcu();
-	      				 g.getChildren().add(this.acu);
-	      				initAcuDragged();
-	      			 }
-	      			     
-	      			  catch(Exception x) {
-	        		    	System.out.println("invalid input");
-	        		    	setLoc();
-	        		    };
-	      			
-	      		 
-	      		 
-	      		   
-	      		   break;
-	      	    default:
-	      	    	break;
-	      	   
-	      	   }
-	         });
+		      	   }
+		         });
+		    	
+		    	txtevapd.setOnKeyPressed(e->{
+		      		 switch(e.getCode()) {
+		      	   case ENTER:
+		      		 try {
+		      				 this.acud=Double.parseDouble(txtevapd.getText())*10;
+		      				 g.getChildren().remove(this.acu);
+		      				 this.acu=setAcu();
+		      				 g.getChildren().add(this.acu);
+		      				initAcuDragged();
+		      			 }
+		      			catch(Exception x) {
+		        		    	setAcuLoc();
+		        		    };
+		      		   break;
+		      	    default:
+		      	    	break;
+		      	   }
+		         });
+		    	
+		    	
+		    	txtcompw.setOnKeyPressed(e->{
+				      switch(e.getCode()) {
+			      	   case ENTER:
+			      		 
+			      			 try {
+			      				 this.compw=Double.parseDouble(txtcompw.getText())*10;
+			      				 g.getChildren().remove(this.cmp);
+			      				 this.cmp=setCompressor();
+			      				 g.getChildren().add(this.cmp);
+			      				initAcuDragged();
+			      			 }
+			      			  catch(Exception x) {
+			      				setCompLoc();
+			        		    };
+			      			break;
+			      	    default:
+			      	    	break;
+			      	   }
+			         });
+			    	txtcomph.setOnKeyPressed(e->{
+				      	 switch(e.getCode()) {
+			      	   case ENTER:
+			      		 try {
+			      				 this.comph=Double.parseDouble(txtcomph.getText())*10;
+			      				 g.getChildren().remove(this.cmp);
+			      				 this.cmp=setCompressor();
+			      				 g.getChildren().add(this.cmp);
+			      				initAcuDragged();
+			      			 }
+			      			catch(Exception x) {
+			      				setCompLoc();
+			        		    };
+			      		break;
+			      	    default:
+			      	    	break;
+			      	   }
+			         });
+			    	
+			    	txtcompd.setOnKeyPressed(e->{
+			      		 switch(e.getCode()) {
+			      	   case ENTER:
+			      		 try {
+			      				 this.compd=Double.parseDouble(txtcompd.getText())*10;
+			      				 g.getChildren().remove(this.cmp);
+			      				 this.cmp=setCompressor();
+			      				 g.getChildren().add(this.cmp);
+			      				initAcuDragged();
+			      			 }
+			      			catch(Exception x) {
+			      				setCompLoc();
+			        		    };
+			      		   break;
+			      	    default:
+			      	    	break;
+			      	   }
+			         });
+			    	txtcompb.setOnKeyPressed(e->{
+			    		switch(e.getCode()) {
+			        	   case ENTER:
+			        		   
+			        		   if(txtcompb.getText().equals("center"))  {
+			        			   cmp.translateYProperty().bind(compY);
+			        			   compY.set((height)/-2+comph/2);
+			        			   setCompLoc();
+			        		   }else {
+			        			   cmp.translateYProperty().bind(compY);
+			        			   initlocation(compY, 0,txtcompb.getText(),-10);
+			        			}
+			        		 break;
+			        	    default:
+			        	    	break;
+			        	   }
+			      	   
+			         });
+			    	
+			    	txtcompt.setOnKeyPressed(e->{
+				      	 switch(e.getCode()) {
+			      	   case ENTER:
+			      		 if(txtcompt.getText().equals("center")) {
+			      			cmp.translateYProperty().bind(compY);
+			      			compY.set((height)/-2+comph/2);
+			         		 setCompLoc();
+			      		 }else {
+			      			 cmp.translateYProperty().bind(compY);
+			        		 initlocation(compY, -height + comph,txtcompt.getText(),10);
+			      			 }
+			      		 break;
+			      	    default:
+			      	    	break;
+			      	   }
+			         });
+			    	txtcompl.setOnKeyPressed(e->{
+				    	   double boundL=(selectedwall==2)?(width+wall*4-compw)/2:(selectedwall==3)?(width+wall*4-compw)/-2:(selectedwall==0)?(length+wall*4-compw)/-2:(length+wall*4-compw)/2;
+				     	   switch(e.getCode()) {
+				     	   case ENTER:
+				     		   if(txtcompl.getText().equals("center")) {
+				     			  compX.set(0);
+				     			  setCompLoc();
+				     		   }else {
+				     			  initlocation(compX, boundL,txtcompl.getText(),10);
+				     		   }
+				     		   break;
+				     	    default:
+				     	    	break;
+				     	   }
+				        });
+			    	
+			    	txtcompr.setOnKeyPressed(e->{
+				    	   double boundR=(selectedwall==2)?(width+wall*4-compw)/-2:(selectedwall==3)?(width+wall*4-compw)/2:(selectedwall==0)?(length+wall*4-compw)/2:(length+wall*4-compw)/-2;
+				     	   switch(e.getCode()) {
+				     	   case ENTER:
+				     		   if(txtcompr.getText().equals("center")) {
+				     			  compX.set(0);
+				     			  setCompLoc();
+				     		   }else {
+				     			   initlocation(compX, boundR,txtcompr.getText(),10);
+				     			}
+				     		   break;
+				     	    default:
+				     	    	break;
+				     	   }
+				        });
 	}
 }
