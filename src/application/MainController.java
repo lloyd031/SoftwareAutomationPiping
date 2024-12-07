@@ -18,6 +18,7 @@ import javafx.scene.SubScene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
@@ -80,7 +81,8 @@ public class MainController implements Initializable{
     private Button btndim,btnevap,btncomp;
 	@FXML
 	private TitledPane acrdncomploc,acrdnaculoc;
-
+	@FXML
+	private Label lblcap,lblcap2,runbtn;
 	@FXML
 	private ComboBox<String> cbboxref;
 	
@@ -101,7 +103,7 @@ public class MainController implements Initializable{
         PerspectiveCamera camera = new PerspectiveCamera(true);
 		camera.setFarClip(1500);
 		camera.setNearClip(1);
-		camera.translateXProperty().set(0);
+		camera.translateXProperty().set(-10);
 		camera.translateYProperty().set(-200);
 		camera.translateZProperty().set(-200);
 		camera.setRotationAxis(Rotate.X_AXIS);
@@ -151,7 +153,12 @@ public class MainController implements Initializable{
         
     	initKeyPressed(root3D);
       
-       
+        runbtn.setOnMouseClicked(e->{
+        	Run r=new Run();
+        	double cap=r.capacityIntons(this.length/10, this.width/10);
+        	lblcap.setText(String.format("%.5f",cap));
+        	lblcap2.setText(String.format("%.5f",r.capacityInKW(cap)));
+        });
     	
     }
     

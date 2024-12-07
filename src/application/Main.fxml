@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.SubScene?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
@@ -9,6 +11,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
@@ -20,363 +23,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="661.0" prefWidth="600.0" style="-fx-background-color: #212830;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="471.0" prefWidth="600.0" style="-fx-background-color: #212830;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <center>
       <SubScene fx:id="threeDModel" depthBuffer="true" BorderPane.alignment="CENTER">
         <root>
           <Region />
         </root>
+         <cursor>
+            <Cursor fx:constant="OPEN_HAND" />
+         </cursor>
       </SubScene>
    </center>
-   <left>
-      <VBox BorderPane.alignment="CENTER">
-         <children>
-            <VBox alignment="CENTER" depthTest="DISABLE" spacing="10.0" style="-fx-background-color: #212830;">
-               <children>
-                  <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4655;">
-                     <children>
-                        <HBox>
-                           <children>
-                              <Label text="Installation location" textFill="WHITE">
-                                 <font>
-                                    <Font name="Arial" size="13.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER">
-                           <children>
-                              <ComboBox fx:id="cbboxwall" prefWidth="85.0" promptText="Wall-1" />
-                           </children>
-                        </HBox>
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0 " />
-                     </padding>
-                  </VBox>
-                  <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4655;">
-                     <children>
-                        <HBox>
-                           <children>
-                              <Label text="Dimension Settings" textFill="WHITE">
-                                 <font>
-                                    <Font name="Arial" size="13.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                           <children>
-                              <Label text="L :   " textFill="WHITE" />
-                              <TextField fx:id="txtlength" focusTraversable="false" maxWidth="85.0" promptText="Enter length" text="7">
-                                 <font>
-                                    <Font size="13.0" />
-                                 </font>
-                              </TextField>
-                              <Label text="m" textFill="WHITE" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                           <children>
-                              <Label text="W : " textFill="WHITE" />
-                              <TextField fx:id="txtwidth" focusTraversable="false" prefWidth="85.0" promptText="Enter width" text="5">
-                                 <font>
-                                    <Font size="13.0" />
-                                 </font>
-                              </TextField>
-                              <Label text="m" textFill="WHITE" />
-                           </children>
-                        </HBox>
-                        <HBox spacing="3.0" style="-fx-background-color: #3c465500;">
-                           <children>
-                              <Label text="H :  " textFill="WHITE" />
-                              <TextField fx:id="txtheight" focusTraversable="false" prefWidth="85.0" promptText="Enter height" text="2">
-                                 <font>
-                                    <Font size="13.0" />
-                                 </font>
-                              </TextField>
-                              <Label text="m" textFill="WHITE" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="TOP_RIGHT">
-                           <children>
-                              <Button fx:id="btndim" mnemonicParsing="false" text="Set" />
-                           </children>
-                        </HBox>
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0 " />
-                     </padding>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </VBox>
-                  <VBox alignment="TOP_RIGHT" spacing="3.0" style="-fx-background-color: #3c4655;">
-                     <children>
-                        <HBox>
-                           <children>
-                              <Label text="Evaporator Settings" textFill="WHITE">
-                                 <font>
-                                    <Font name="Arial" size="13.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox />
-                        <Accordion>
-                          <panes>
-                            <TitledPane animated="false" prefWidth="85.0" text="Dimension">
-                                 <content>
-                                    <VBox spacing="2.5">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="W : " />
-                                                <TextField fx:id="txtevapw" focusTraversable="false" prefWidth="60.0" text="1.05">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="H : ">
-                                                   <font>
-                                                      <Font size="14.0" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="txtevaph" focusTraversable="false" prefWidth="60.0" text="0.32">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="D  : " />
-                                                <TextField fx:id="txtevapd" focusTraversable="false" prefWidth="60.0" text="0.25">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;" />
-                                       </children>
-                                    </VBox>
-                                 </content>
-                              </TitledPane>
-                            <TitledPane fx:id="acrdnaculoc" animated="false" prefWidth="85.0" text="Location">
-                                 <content>
-                                    <VBox alignment="TOP_CENTER" spacing="2.5">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="L : ">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="txtacul" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="T : ">
-                                                   <font>
-                                                      <Font size="12.5" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="txtacut" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="R : " />
-                                                <TextField fx:id="txtacur" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="B : " />
-                                                <TextField fx:id="txtacub" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                 </content>
-                              </TitledPane>
-                          </panes>
-                        </Accordion>
-                        <HBox alignment="CENTER" />
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </VBox>
-                  <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #3c4655;">
-                     <children>
-                        <HBox>
-                           <children>
-                              <Label text="Compressor Settings" textFill="WHITE">
-                                 <font>
-                                    <Font name="Arial" size="13.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox />
-                        <Accordion>
-                           <panes>
-                              <TitledPane animated="false" prefWidth="85.0" text="Dimension">
-                                 <content>
-                                    <VBox spacing="2.5">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="W : " />
-                                                <TextField fx:id="txtcompw" focusTraversable="false" prefWidth="60.0" text="0.87">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="H : ">
-                                                   <font>
-                                                      <Font size="14.0" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="txtcomph" focusTraversable="false" prefWidth="60.0" text="0.65">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="D  : " />
-                                                <TextField fx:id="txtcompd" focusTraversable="false" prefWidth="60.0" text="0.33">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                 </content>
-                              </TitledPane>
-                              <TitledPane fx:id="acrdncomploc" animated="false" prefWidth="85.0" text="Location">
-                                 <content>
-                                    <VBox alignment="TOP_CENTER" spacing="2.5">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="L : ">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="txtcompl" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="T : ">
-                                                   <font>
-                                                      <Font size="12.5" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="txtcompt" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="R : " />
-                                                <TextField fx:id="txtcompr" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
-                                             <children>
-                                                <Label text="B : " />
-                                                <TextField fx:id="txtcompb" focusTraversable="false" prefWidth="60.0" text="0">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </TextField>
-                                                <Label text="m" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                 </content>
-                              </TitledPane>
-                           </panes>
-                        </Accordion>
-                        <HBox alignment="CENTER" />
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </VBox>
-               </children>
-            </VBox>
-         </children>
-      </VBox>
-   </left>
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -401,7 +58,7 @@
                   </Menu>
               </menus>
             </MenuBar>
-            <HBox prefHeight="25.0" spacing="10.0" style="-fx-background-color: #f3f3f3;">
+            <HBox prefHeight="25.0" spacing="10.0" style="-fx-background-color: #3c4454;">
                <children>
                   <Label>
                      <graphic>
@@ -430,9 +87,9 @@
                         </ImageView>
                      </graphic>
                   </Label>
-                  <ComboBox fx:id="cbboxref" promptText="R-22" />
                   <Separator prefHeight="39.0" prefWidth="200.0" visible="false" HBox.hgrow="ALWAYS" />
-                  <Label>
+                  <ComboBox fx:id="cbboxref" promptText="R-22" />
+                  <Label fx:id="runbtn">
                      <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -449,13 +106,574 @@
          </children>
       </VBox>
    </top>
-   <bottom>
-      <HBox alignment="TOP_RIGHT" prefHeight="0.0" prefWidth="600.0">
+   <left>
+      <VBox prefHeight="200.0" style="-fx-background-color: #212830;" BorderPane.alignment="CENTER">
+         <children>
+            <ScrollPane hbarPolicy="NEVER" style="-fx-background-color: #212830;" vbarPolicy="ALWAYS">
+               <content>
+                  <VBox alignment="CENTER" depthTest="DISABLE" spacing="10.0" style="-fx-background-color: #212830;">
+                     <children>
+                        <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4454;">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label text="Installation location" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial" size="13.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <ComboBox fx:id="cbboxwall" prefWidth="122.0" promptText="Wall-1" />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0 " />
+                           </padding>
+                        </VBox>
+                        <VBox alignment="TOP_RIGHT" spacing="5.0" style="-fx-background-color: #3c4655;">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label text="Wall Settings" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial" size="13.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <Accordion>
+                                <panes>
+                                  <TitledPane prefWidth="85.0" text="Dimension">
+                                       <content>
+                                          <VBox spacing="2.5">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="L :   " />
+                                                      <TextField fx:id="txtlength" focusTraversable="false" maxWidth="60.0" promptText="Enter length" text="7">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="W : ">
+                                                         <font>
+                                                            <Font size="12.5" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtwidth" focusTraversable="false" prefWidth="60.0" promptText="Enter width" text="5">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="H :  ">
+                                                         <font>
+                                                            <Font size="12.5" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtheight" focusTraversable="false" prefWidth="60.0" promptText="Enter height" text="2">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <Button fx:id="btndim" mnemonicParsing="false" prefWidth="120.0" text="Set" />
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                  </TitledPane>
+                                </panes>
+                              </Accordion>
+                              <HBox alignment="CENTER" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0 " />
+                           </padding>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </VBox>
+                        <VBox alignment="TOP_RIGHT" spacing="3.0" style="-fx-background-color: #3c4655;">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label text="Evaporator Settings" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial" size="13.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox />
+                              <Accordion>
+                                <panes>
+                                  <TitledPane prefWidth="85.0" text="Dimension">
+                                       <content>
+                                          <VBox spacing="2.5">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="W : " />
+                                                      <TextField fx:id="txtevapw" focusTraversable="false" prefWidth="60.0" text="1.05">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="H : ">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtevaph" focusTraversable="false" prefWidth="60.0" text="0.32">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="D  : " />
+                                                      <TextField fx:id="txtevapd" focusTraversable="false" prefWidth="60.0" text="0.25">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;" />
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                    </TitledPane>
+                                  <TitledPane fx:id="acrdnaculoc" prefWidth="85.0" text="Location">
+                                       <content>
+                                          <VBox alignment="TOP_CENTER" spacing="2.5">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="L : ">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtacul" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="T : ">
+                                                         <font>
+                                                            <Font size="12.5" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtacut" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="R : " />
+                                                      <TextField fx:id="txtacur" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="B : " />
+                                                      <TextField fx:id="txtacub" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                    </TitledPane>
+                                </panes>
+                              </Accordion>
+                              <HBox alignment="CENTER" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="3.0" style="-fx-background-color: #3c4655;">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label text="Compressor Settings" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial" size="13.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox />
+                              <Accordion>
+                                 <panes>
+                                    <TitledPane prefWidth="85.0" text="Dimension">
+                                       <content>
+                                          <VBox spacing="2.5">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="W : " />
+                                                      <TextField fx:id="txtcompw" focusTraversable="false" prefWidth="60.0" text="0.87">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="H : ">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtcomph" focusTraversable="false" prefWidth="60.0" text="0.65">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="D  : " />
+                                                      <TextField fx:id="txtcompd" focusTraversable="false" prefWidth="60.0" text="0.33">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                    </TitledPane>
+                                    <TitledPane fx:id="acrdncomploc" prefWidth="85.0" text="Location">
+                                       <content>
+                                          <VBox alignment="TOP_CENTER" spacing="2.5">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="L : ">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtcompl" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="T : ">
+                                                         <font>
+                                                            <Font size="12.5" />
+                                                         </font>
+                                                      </Label>
+                                                      <TextField fx:id="txtcompt" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="R : " />
+                                                      <TextField fx:id="txtcompr" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="3.0" style="-fx-background-color: #3c465500;">
+                                                   <children>
+                                                      <Label text="B : " />
+                                                      <TextField fx:id="txtcompb" focusTraversable="false" prefWidth="60.0" text="0">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label text="m" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                    </TitledPane>
+                                 </panes>
+                              </Accordion>
+                              <HBox alignment="CENTER" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </VBox>
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            <Separator opacity="0.0" orientation="VERTICAL" VBox.vgrow="ALWAYS" />
+            <Accordion>
+              <panes>
+                <TitledPane prefWidth="85.0" text="Temp. Settings">
+                     <content>
+                        <VBox spacing="2.5" style="-fx-background-color: #3c4655;">
+                           <children>
+                              <Label text="Evaporator Temp." textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial" size="13.0" />
+                                 </font>
+                              </Label>
+                              <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="117.0" spacing="5.0" style="-fx-background-color: #3c465500;">
+                                 <children>
+                                    <TextField fx:id="txtcompb11" focusTraversable="false" prefHeight="29.0" prefWidth="94.0" text="0">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </TextField>
+                                    <Label text="°C" textFill="WHITE" />
+                                 </children>
+                              </HBox>
+                              <Label text="Condenser Temp." textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial" size="13.0" />
+                                 </font>
+                              </Label>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: #3c465500;">
+                                 <children>
+                                    <TextField fx:id="txtcompb112" focusTraversable="false" prefHeight="29.0" prefWidth="93.0" text="0">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </TextField>
+                                    <Label text="°C" textFill="WHITE" />
+                                 </children>
+                              </HBox>
+                              <Label text="Design Temp. Drop" textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial" size="13.0" />
+                                 </font>
+                              </Label>
+                              <HBox />
+                              <HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: #3c465500;">
+                                 <children>
+                                    <TextField fx:id="txtcompb111" focusTraversable="false" prefHeight="29.0" prefWidth="90.0" text="0">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </TextField>
+                                    <Label text="K/m" textFill="WHITE" />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <rotationAxis>
+                              <Point3D />
+                           </rotationAxis>
+                        </VBox>
+                     </content>
+                </TitledPane>
+              </panes>
+            </Accordion>
+         </children>
          <padding>
-            <Insets bottom="5.0" left="10.0" right="15.0" top="8.0" />
+            <Insets bottom="8.0" top="5.0" />
          </padding>
-      </HBox>
+      </VBox>
+   </left>
+   <bottom>
+      <VBox prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox spacing="2.5">
+               <children>
+                  <Label style="-fx-background-color: #2d3441;" text="System output" textFill="WHITE">
+                     <padding>
+                        <Insets bottom="2.0" left="8.0" right="20.0" top="2.0" />
+                     </padding>
+                  </Label>
+                  <Label style="-fx-background-color: #3c4454;" text="Suction line" textFill="WHITE">
+                     <padding>
+                        <Insets bottom="2.0" left="8.0" right="20.0" top="2.0" />
+                     </padding>
+                  </Label>
+                  <Label style="-fx-background-color: #3c4454;" text="Liquid line" textFill="WHITE">
+                     <padding>
+                        <Insets bottom="2.0" left="8.0" right="20.0" top="2.0" />
+                     </padding>
+                  </Label>
+                  <Separator opacity="0.0" HBox.hgrow="ALWAYS" />
+                  <Label style="-fx-background-color: #2d3441;" text="00:00" textFill="WHITE">
+                     <padding>
+                        <Insets bottom="2.0" left="8.0" right="8.0" top="2.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </HBox>
+            <VBox prefHeight="100.0" style="-fx-background-color: #2d3441;">
+               <children>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label text="Capacity" textFill="WHITE">
+                           <padding>
+                              <Insets left="8.0" right="8.0" />
+                           </padding>
+                        </Label>
+                        <Separator opacity="0.0" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblcap" text="--" textFill="#00d300">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets left="8.0" right="3.0" />
+                           </padding>
+                        </Label>
+                        <Label text="tons of refrigeration" textFill="WHITE">
+                           <padding>
+                              <Insets left="8.0" right="8.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Separator opacity="0.0" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblcap2" text="--" textFill="#00d300">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets left="8.0" right="11.0" />
+                           </padding>
+                        </Label>
+                        <Label text="kW of refrigeration" textFill="WHITE">
+                           <padding>
+                              <Insets right="14.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label text="Mass flow rate" textFill="WHITE">
+                           <padding>
+                              <Insets left="8.0" right="8.0" />
+                           </padding>
+                        </Label>
+                        <Separator opacity="0.0" HBox.hgrow="ALWAYS" />
+                        <Label text="--" textFill="#00d300">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="8.0" left="8.0" right="8.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Label text="Capacity [tons of refrigeration]" textFill="WHITE">
+                           <padding>
+                              <Insets left="8.0" right="8.0" />
+                           </padding>
+                        </Label>
+                        <Separator opacity="0.0" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblcap1" text="--" textFill="#00d300">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="8.0" left="8.0" right="8.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </VBox>
    </bottom>
+   <right>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+   </right>
    
    
 </BorderPane>
