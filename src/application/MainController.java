@@ -1,7 +1,10 @@
 package application;
 
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -15,7 +18,6 @@ import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SubScene;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -53,6 +55,9 @@ public class MainController implements Initializable{
 	private DoubleProperty compY=null;
     private Group acu;
     private Group cmp;
+    private PathNode start;
+    private PathNode end;
+    private Group flowline;
     private double width=50;
     private double height=20;
     private double length=70;
@@ -159,6 +164,7 @@ public class MainController implements Initializable{
         	lblcap.setText(String.format("%.5f",cap));
         	lblcap2.setText(String.format("%.5f",r.capacityInKW(cap)));
         });
+        
     	
     }
     
@@ -339,8 +345,9 @@ public class MainController implements Initializable{
         root3D.getChildren().addAll(prepareLightSource());
         acu=setAcu();
         cmp=setCompressor();
+        flowline=new Group();
         addAcul(root3D);
-        root3D.getChildren().addAll(acu,cmp);
+        root3D.getChildren().addAll(acu,cmp,flowline);
 		System.out.println("GGG");
     }
     private void addAcul(Group root) {
@@ -395,6 +402,12 @@ public class MainController implements Initializable{
 	    	acu.translateXProperty().set(wall.getTranslateX()+((acud+this.wall)/2)*z);
 	    }
 	    acu.translateYProperty().set((height)/-2 + (acuh)/2);
+	    box3.setOnMouseClicked(e->{
+	    	if(this.start==null) {
+	    		
+	    		Pipe p=new Pipe(this.start, this.end);
+	    	}
+	    });
 	    return  acu;
     }
    	private Group setCompressor() {
@@ -433,6 +446,72 @@ public class MainController implements Initializable{
 	    	compressor.translateXProperty().set(wall.getTranslateX()-(compd+this.wall)/2*z);
 	    }
 	    compressor.translateYProperty().set((height)/-2 + acuh);
+	    box4.setOnMouseClicked(e->{
+	    	if(this.start==null) {
+	    		this.start=new PathNode(compressor.getTranslateX()-(Double.parseDouble(txtcompw.getText())*10)/2,compressor.getTranslateY()-1,compressor.getTranslateZ());
+	    		this.end=new PathNode(acu.getTranslateX()-(Double.parseDouble(txtevapw.getText())*10)/2-0.5,acu.getTranslateY()-1,acu.getTranslateZ());
+	    		
+	    		/**
+	    		 * Cylinder a=new Cylinder(0.25,1);
+	    		a.translateZProperty().set(compressor.getTranslateZ());
+	    		a.translateYProperty().set(compressor.getTranslateY()-1);
+	    		a.translateXProperty().set(compressor.getTranslateX()-(Double.parseDouble(txtcompw.getText())*10)/2-0.5);
+	    		a.setRotationAxis(Rotate.Z_AXIS); 
+	    		a.setRotate(90);
+	    		this.flowline.getChildren().add(a);
+	    		Cylinder a=new Cylinder(0.25,1);
+	    		a.translateZProperty().set(acu.getTranslateZ());
+	    		a.translateYProperty().set(acu.getTranslateY()-1);
+	    		a.translateXProperty().set(acu.getTranslateX()-(Double.parseDouble(txtevapw.getText())*10)/2-0.5);
+	    		a.setRotationAxis(Rotate.Z_AXIS); 
+	    		a.setRotate(90);
+	    		this.flowline.getChildren().add(a);
+	    		 */
+	    		
+	    		Pipe p=new Pipe(this.start, this.end);
+	    		Stack<PathNode> k=p.getPath();
+	    		PathNode path[]=new PathNode[p.getPath().size()];
+	    		for(int j=0; j<path.length; j++) {
+	    				path[j]=k.pop();
+	    		}
+	    		for(int j=path.length-1; j>=0; j--) {
+	    			if(j!=0) {
+	    				if(path[j].getZ()<path[j-1].getZ()){
+	    					double w=path[j-1].getZ()-path[j].getZ();
+	    					Cylinder pathpoint=new Cylinder(0.25,w);
+			    			pathpoint.translateXProperty().set(path[j].getX());
+			    			pathpoint.translateYProperty().set(path[j].getY());
+			    			pathpoint.translateZProperty().set(path[j].getZ()+w/2);
+			    			pathpoint.setRotationAxis(Rotate.X_AXIS);
+			    			pathpoint.setRotate(90);
+			    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
+	    				}
+	    				if(path[j].getY()>path[j-1].getY()){
+	    					double w=path[j].getY()-path[j-1].getY();
+	    					Cylinder pathpoint=new Cylinder(0.25,w);
+			    			pathpoint.translateXProperty().set(path[j].getX());
+			    			pathpoint.translateYProperty().set(path[j].getY()-w/2);
+			    			pathpoint.translateZProperty().set(path[j].getZ());
+			    			
+			    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
+	    				}
+	    			}else {
+	    				if(path[0].getX()>path[1].getX()){
+	    					double w=path[0].getX()-path[1].getX();
+	    					Cylinder pathpoint=new Cylinder(0.25,w);
+			    			pathpoint.translateXProperty().set(path[j].getX()-w/2);
+			    			pathpoint.translateYProperty().set(path[j].getY());
+			    			pathpoint.translateZProperty().set(path[j].getZ());
+			    			pathpoint.setRotationAxis(Rotate.Z_AXIS);
+			    			pathpoint.setRotate(90);
+			    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
+	    				}
+	    			}
+    				
+	    		}
+	    		
+	    	}
+	    });
 	    return  compressor;
     }
 	private Box drawBox(int comp, double w, double h, double d, double x, double y, double z) {
@@ -569,13 +648,14 @@ public class MainController implements Initializable{
 	private void initKeyPressed(Group g) {
 		txtacul.setOnKeyPressed(e->{
 	    	   double boundL=(selectedwall==2)?(width-acuw)/-2:(selectedwall==3)?(width-acuw)/2:(selectedwall==0)?(length-acuw)/2:(length-acuw)/-2;
-	     	  	switch(e.getCode()) {
+	    	   int mul=(selectedwall==2 || selectedwall==1)?10:-10;
+	    	   switch(e.getCode()) {
 	     	   case ENTER:
 	     		   if(txtacul.getText().equals("center")) {
 	     			  acuX.set(0);
 	     			  setAcuLoc();
 	     		   }else {
-	     			initlocation(acuX, boundL,txtacul.getText(),10);
+	     			initlocation(acuX, boundL,txtacul.getText(),mul);
 	     			 }
 	     		   break;
 	     	    default:
@@ -584,13 +664,14 @@ public class MainController implements Initializable{
 	        });
 	     txtacur.setOnKeyPressed(e->{
 	    	 	double boundR=(selectedwall==2)?(width-acuw)/2:(selectedwall==3)?(width-acuw)/-2:(selectedwall==0)?(length-acuw)/-2:(length-acuw)/2;
-	     	   switch(e.getCode()) {
+	    	 	int mul=(selectedwall==2 || selectedwall==1)?-10:10;
+	    	 	switch(e.getCode()) {
 	     	   case ENTER:
 	     		  if(txtacur.getText().equals("center"))  {
 	     			  acuX.set(0);
 	     			  setAcuLoc();
 	     		  }else {
-	     				initlocation(acuX, boundR,txtacur.getText(),-10);
+	     				initlocation(acuX, boundR,txtacur.getText(),mul);
 	     			}
 	     		   
 	     		   break;
@@ -660,7 +741,6 @@ public class MainController implements Initializable{
 			      	 switch(e.getCode()) {
 		      	   case ENTER:
 		      		 try {
-		      				 
 		      				 this.acuh=Double.parseDouble(txtevaph.getText())*10;
 		      				 g.getChildren().remove(this.acu);
 		      				 this.acu=setAcu();
@@ -790,13 +870,14 @@ public class MainController implements Initializable{
 			         });
 			    	txtcompl.setOnKeyPressed(e->{
 				    	   double boundL=(selectedwall==2)?(width+wall*4-compw)/2:(selectedwall==3)?(width+wall*4-compw)/-2:(selectedwall==0)?(length+wall*4-compw)/-2:(length+wall*4-compw)/2;
-				     	   switch(e.getCode()) {
+				     	   int mul=(selectedwall==2 || selectedwall==1)?-10:10;
+				    	   switch(e.getCode()) {
 				     	   case ENTER:
 				     		   if(txtcompl.getText().equals("center")) {
 				     			  compX.set(0);
 				     			  setCompLoc();
 				     		   }else {
-				     			  initlocation(compX, boundL,txtcompl.getText(),10);
+				     			  initlocation(compX, boundL,txtcompl.getText(),mul);
 				     		   }
 				     		   break;
 				     	    default:
@@ -806,18 +887,21 @@ public class MainController implements Initializable{
 			    	
 			    	txtcompr.setOnKeyPressed(e->{
 				    	   double boundR=(selectedwall==2)?(width+wall*4-compw)/-2:(selectedwall==3)?(width+wall*4-compw)/2:(selectedwall==0)?(length+wall*4-compw)/2:(length+wall*4-compw)/-2;
-				     	   switch(e.getCode()) {
+				    	   int mul=(selectedwall==2 || selectedwall==1)?10:-10;
+				    	   switch(e.getCode()) {
 				     	   case ENTER:
 				     		   if(txtcompr.getText().equals("center")) {
 				     			  compX.set(0);
 				     			  setCompLoc();
 				     		   }else {
-				     			   initlocation(compX, boundR,txtcompr.getText(),10);
+				     			   initlocation(compX, boundR,txtcompr.getText(),mul);
 				     			}
 				     		   break;
 				     	    default:
 				     	    	break;
 				     	   }
 				        });
+			    	
+			    	
 	}
 }

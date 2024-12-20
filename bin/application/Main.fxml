@@ -644,7 +644,7 @@
                   </HBox>
                   <HBox alignment="CENTER">
                      <children>
-                        <Label text="Capacity [tons of refrigeration]" textFill="WHITE">
+                        <Label text="Refrigerating effect" textFill="WHITE">
                            <padding>
                               <Insets left="8.0" right="8.0" />
                            </padding>
