@@ -448,8 +448,13 @@ public class MainController implements Initializable{
 	    compressor.translateYProperty().set((height)/-2 + acuh);
 	    box4.setOnMouseClicked(e->{
 	    	if(this.start==null) {
-	    		this.start=new PathNode(compressor.getTranslateX()-(Double.parseDouble(txtcompw.getText())*10)/2,compressor.getTranslateY()-1,compressor.getTranslateZ());
-	    		this.end=new PathNode(acu.getTranslateX()-(Double.parseDouble(txtevapw.getText())*10)/2-0.5,acu.getTranslateY()-1,acu.getTranslateZ());
+	    		int mul1=(selectedwall==2|| selectedwall==0)?1:-1;
+	    		double x1=(selectedwall>1)?compressor.getTranslateX()+(Double.parseDouble(txtcompw.getText())*10)/2*-mul1:n2[selectedwall].getTranslateX()+this.wall*mul1;
+	    		double z1=(selectedwall>1)?n2[selectedwall].getTranslateZ()+this.wall*mul1:compressor.getTranslateZ()+(Double.parseDouble(txtcompw.getText())*10)/2*mul1;
+	    		double x2=(selectedwall>1)?acu.getTranslateX()+(Double.parseDouble(txtevapw.getText())*10)/2*-mul1:n[selectedwall].getTranslateX()+this.wall*-mul1;
+	    		double z2=(selectedwall>1)?n[selectedwall].getTranslateZ()+this.wall*-mul1:acu.getTranslateZ()+(Double.parseDouble(txtevapw.getText())*10)/2*mul1;
+	    		this.start=new PathNode(x1,compressor.getTranslateY()-1,z1);
+	    		this.end=new PathNode(x2,acu.getTranslateY()-1,z2);
 	    		
 	    		/**
 	    		 * Cylinder a=new Cylinder(0.25,1);
@@ -476,34 +481,28 @@ public class MainController implements Initializable{
 	    		}
 	    		for(int j=path.length-1; j>=0; j--) {
 	    			if(j!=0) {
-	    				if(path[j].getZ()<path[j-1].getZ()){
+	    				if(path[j].getZ()<path[j-1].getZ() || path[j].getZ()>path[j-1].getZ()){
 	    					double w=path[j-1].getZ()-path[j].getZ();
-	    					Cylinder pathpoint=new Cylinder(0.25,w);
-			    			pathpoint.translateXProperty().set(path[j].getX());
-			    			pathpoint.translateYProperty().set(path[j].getY());
-			    			pathpoint.translateZProperty().set(path[j].getZ()+w/2);
+	    					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX(),path[j].getY(), path[j].getZ()+w/2,90);
 			    			pathpoint.setRotationAxis(Rotate.X_AXIS);
-			    			pathpoint.setRotate(90);
 			    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
 	    				}
-	    				if(path[j].getY()>path[j-1].getY()){
+	    				if(path[j].getY()>path[j-1].getY() || path[j].getY()<path[j-1].getY()){
 	    					double w=path[j].getY()-path[j-1].getY();
-	    					Cylinder pathpoint=new Cylinder(0.25,w);
-			    			pathpoint.translateXProperty().set(path[j].getX());
-			    			pathpoint.translateYProperty().set(path[j].getY()-w/2);
-			    			pathpoint.translateZProperty().set(path[j].getZ());
-			    			
+	    					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX(),path[j].getY()-w/2, path[j].getZ(),0);
+			    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
+	    				}
+	    				if(path[j].getX()>path[j-1].getX() || path[j].getX()<path[j-1].getX()){
+	    					double w=path[j].getX()-path[j-1].getX();
+	    					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX()-w/2,path[j].getY(), path[j].getZ(),90);
+	    					pathpoint.setRotationAxis(Rotate.Z_AXIS);
 			    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
 	    				}
 	    			}else {
-	    				if(path[0].getX()>path[1].getX()){
+	    				if(path[0].getX()>path[1].getX() || path[0].getX()>path[1].getX()){
 	    					double w=path[0].getX()-path[1].getX();
-	    					Cylinder pathpoint=new Cylinder(0.25,w);
-			    			pathpoint.translateXProperty().set(path[j].getX()-w/2);
-			    			pathpoint.translateYProperty().set(path[j].getY());
-			    			pathpoint.translateZProperty().set(path[j].getZ());
+	    					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX()-w/2,path[j].getY(), path[j].getZ(),90);
 			    			pathpoint.setRotationAxis(Rotate.Z_AXIS);
-			    			pathpoint.setRotate(90);
 			    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
 	    				}
 	    			}
@@ -514,6 +513,14 @@ public class MainController implements Initializable{
 	    });
 	    return  compressor;
     }
+   	public Cylinder createpn(double w, double x, double y, double z, int deg) {
+   		Cylinder pathpoint=new Cylinder(0.25,w);
+		pathpoint.translateXProperty().set(x);
+		pathpoint.translateYProperty().set(y);
+		pathpoint.translateZProperty().set(z);
+		pathpoint.setRotate(deg);
+   		return pathpoint;
+   	}
 	private Box drawBox(int comp, double w, double h, double d, double x, double y, double z) {
 		PhongMaterial material = new PhongMaterial();
 		Box b=new Box(w,h,d);

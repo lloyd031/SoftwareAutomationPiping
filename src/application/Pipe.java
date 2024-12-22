@@ -11,33 +11,46 @@ public class Pipe {
 	private PathNode start;
 	private PathNode end;
 	int pid=0;
-	double adderX,adderY,adderZ;
 	public Pipe(PathNode start, PathNode end) {
 		this.start=start;
 		this.end=end;
-		adderX=(start.getX()>end.getX())?(start.getX()-end.getX()):(end.getX()-start.getX());
+		/**
+		 * adderX=(start.getX()>end.getX())?(start.getX()-end.getX()):(end.getX()-start.getX());
 		adderY=(start.getY()>end.getY())?(start.getY()-end.getY()):(end.getY()-start.getY());
-		adderZ=(start.getZ()>end.getZ())?(start.getZ()-end.getZ()):(end.getZ()-start.getZ());
+		
+		 */
+		//adderZ=(start.getZ()>end.getZ())?(start.getZ()-end.getZ()):(end.getZ()-start.getZ());
+		System.out.println(start.getX()+ " x "+start.getY());
+		System.out.println("S "+start.getZ());
+		System.out.println("E	 "+end.getZ());
 		BFS(start);
 	}
 	public void addNeighbor(PathNode a) {
-		if(!validate(new PathNode(a.getX()-adderX,a.getY(),a.getZ()))) {
-			createNode(a,new PathNode(a.getX()-adderX,a.getY(),a.getZ()));
+		double adder=1;
+		double adderX1=(a.getX()-adder<end.getX())?a.getX()-end.getX():adder;
+		double adderX2=(a.getX()+adder>end.getX())?end.getX()-a.getX():adder;
+		double adderY1=(a.getY()-adder<end.getY())?a.getY()-end.getY():adder;
+		double adderY2=(a.getY()+adder>end.getY())?end.getY()-a.getY():adder;
+		double adderZ1=(a.getZ()-adder<end.getZ())?a.getZ()-end.getZ():adder;
+		double adderZ2=(a.getZ()+adder>end.getZ())?end.getZ()-a.getZ():adder;
+		
+		if(!validate(new PathNode(a.getX()-adderX1,a.getY(),a.getZ())) ) {
+			createNode(a,new PathNode(a.getX()-adderX1,a.getY(),a.getZ()));
 		}
-		if(!validate(new PathNode(a.getX()+adderX,a.getY(),a.getZ()))) {
-			createNode(a,new PathNode(a.getX()+adderX,a.getY(),a.getZ()));
+		if(!validate(new PathNode(a.getX()+adderX2,a.getY(),a.getZ()))) {
+			createNode(a,new PathNode(a.getX()+adderX2,a.getY(),a.getZ()));
 		}
-		if(!validate(new PathNode(a.getX(),a.getY()-adderY,a.getZ()))) {
-			createNode(a,new PathNode(a.getX(),a.getY()-adderY,a.getZ()));
+		if(!validate(new PathNode(a.getX(),a.getY()-adderY1,a.getZ()))) {
+			createNode(a,new PathNode(a.getX(),a.getY()-adderY1,a.getZ()));
 		}
-		if(!validate(new PathNode(a.getX(),a.getY()+adderY,a.getZ()))) {
-			createNode(a,new PathNode(a.getX(),a.getY()+adderY,a.getZ()));
+		if(!validate(new PathNode(a.getX(),a.getY()+adderY2,a.getZ()))) {
+			createNode(a,new PathNode(a.getX(),a.getY()+adderY2,a.getZ()));
 		}
-		if(!validate(new PathNode(a.getX(),a.getY(),a.getZ()-adderZ))) {
-			createNode(a,new PathNode(a.getX(),a.getY(),a.getZ()-adderZ));
+		if(!validate(new PathNode(a.getX(),a.getY(),a.getZ()-adderZ1))) {
+			createNode(a,new PathNode(a.getX(),a.getY(),a.getZ()-adderZ1));
 		}
-		if(!validate(new PathNode(a.getX(),a.getY(),a.getZ()+adderZ))) {
-			createNode(a,new PathNode(a.getX(),a.getY(),a.getZ()+adderZ));
+		if(!validate(new PathNode(a.getX(),a.getY(),a.getZ()+adderZ2))) {
+			createNode(a,new PathNode(a.getX(),a.getY(),a.getZ()+adderZ2));
 		}
 		pid++;
 	}
