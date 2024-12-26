@@ -73,6 +73,8 @@ public class MainController implements Initializable{
     private double compd=3.3;
     private double wall=2.032/2;
     private double selectedcomp=0;
+    private Block acuB,cmpB;
+    private LinkedList<Block> block= new  LinkedList<Block>();
 	@FXML
     private SubScene threeDModel;
 	
@@ -130,8 +132,6 @@ public class MainController implements Initializable{
     		height=Double.parseDouble(txtheight.getText())*10;
     		root3D.getChildren().clear();
     		loadModel(root3D);
-    		//setLoc();
-    		//initlocation();
     		initializeLocationAcu();
     		initAcuDragged();
     	});
@@ -252,6 +252,7 @@ public class MainController implements Initializable{
             	}
         	this.prevPointY=e.getSceneY();	
         	this.prevPointXZ=e.getSceneX();	
+        	this.acuB.setLoc(acu.getTranslateX(),acu.getTranslateY(),acu.getTranslateZ());
         	setAcuLoc();
         	});
     	cmp.setOnMouseDragged(e->{
@@ -264,7 +265,8 @@ public class MainController implements Initializable{
             	cmp.translateYProperty().bind(compY);
             	compX.set(newX);
             	compY.set(newY);
-            	
+
+                this.cmpB.setLoc(cmp.getTranslateX(),cmp.getTranslateY(),cmp.getTranslateZ());
             	
             	setCompLoc();
         	}
@@ -345,6 +347,10 @@ public class MainController implements Initializable{
         root3D.getChildren().addAll(prepareLightSource());
         acu=setAcu();
         cmp=setCompressor();
+        this.acuB=new Block((selectedwall>1)?acuw:0,(selectedwall>1)?acuh:0,(selectedwall>1)?acud:0);
+        this.cmpB=new Block((selectedwall>1)?compw:0,(selectedwall>1)?comph:0,(selectedwall>1)?compd:0);
+        this.acuB.setLoc(acu.getTranslateX(),acu.getTranslateY(),acu.getTranslateZ());
+        this.cmpB.setLoc(cmp.getTranslateX(),cmp.getTranslateY(),cmp.getTranslateZ());
         flowline=new Group();
         addAcul(root3D);
         root3D.getChildren().addAll(acu,cmp,flowline);
@@ -405,7 +411,7 @@ public class MainController implements Initializable{
 	    box3.setOnMouseClicked(e->{
 	    	if(this.start==null) {
 	    		
-	    		Pipe p=new Pipe(this.start, this.end);
+	    		
 	    	}
 	    });
 	    return  acu;
@@ -448,6 +454,8 @@ public class MainController implements Initializable{
 	    compressor.translateYProperty().set((height)/-2 + acuh);
 	    box4.setOnMouseClicked(e->{
 	    	if(this.start==null) {
+
+	    		
 	    		int mul1=(selectedwall==2|| selectedwall==0)?1:-1;
 	    		double x1=(selectedwall>1)?compressor.getTranslateX()+(Double.parseDouble(txtcompw.getText())*10)/2*-mul1:n2[selectedwall].getTranslateX()+this.wall*mul1;
 	    		double z1=(selectedwall>1)?n2[selectedwall].getTranslateZ()+this.wall*mul1:compressor.getTranslateZ()+(Double.parseDouble(txtcompw.getText())*10)/2*mul1;
@@ -456,29 +464,19 @@ public class MainController implements Initializable{
 	    		this.start=new PathNode(x1,compressor.getTranslateY()-1,z1);
 	    		this.end=new PathNode(x2,acu.getTranslateY()-1,z2);
 	    		
-	    		/**
-	    		 * Cylinder a=new Cylinder(0.25,1);
-	    		a.translateZProperty().set(compressor.getTranslateZ());
-	    		a.translateYProperty().set(compressor.getTranslateY()-1);
-	    		a.translateXProperty().set(compressor.getTranslateX()-(Double.parseDouble(txtcompw.getText())*10)/2-0.5);
-	    		a.setRotationAxis(Rotate.Z_AXIS); 
-	    		a.setRotate(90);
-	    		this.flowline.getChildren().add(a);
-	    		Cylinder a=new Cylinder(0.25,1);
-	    		a.translateZProperty().set(acu.getTranslateZ());
-	    		a.translateYProperty().set(acu.getTranslateY()-1);
-	    		a.translateXProperty().set(acu.getTranslateX()-(Double.parseDouble(txtevapw.getText())*10)/2-0.5);
-	    		a.setRotationAxis(Rotate.Z_AXIS); 
-	    		a.setRotate(90);
-	    		this.flowline.getChildren().add(a);
-	    		 */
 	    		
-	    		Pipe p=new Pipe(this.start, this.end);
+	    		 
+	    		this.block.add(acuB);
+	    		this.block.add(cmpB);
+	    		
+	    		Pipe p=new Pipe(this.start, this.end,this.block);
 	    		Stack<PathNode> k=p.getPath();
 	    		PathNode path[]=new PathNode[p.getPath().size()];
 	    		for(int j=0; j<path.length; j++) {
 	    				path[j]=k.pop();
+	    				
 	    		}
+	    		
 	    		for(int j=path.length-1; j>=0; j--) {
 	    			if(j!=0) {
 	    				if(path[j].getZ()<path[j-1].getZ() || path[j].getZ()>path[j-1].getZ()){
@@ -508,6 +506,7 @@ public class MainController implements Initializable{
 	    			}
     				
 	    		}
+	    		
 	    		
 	    	}
 	    });

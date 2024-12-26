@@ -10,41 +10,34 @@ public class Pipe {
 	private LinkedList<PathNode> visited=new LinkedList<PathNode>();
 	private PathNode start;
 	private PathNode end;
-	int pid=0;
-	public Pipe(PathNode start, PathNode end) {
+	private LinkedList<Block> block=new LinkedList<Block>();
+	int selectedwall=0;
+	public Pipe(PathNode start, PathNode end, LinkedList<Block> block) {
 		this.start=start;
 		this.end=end;
-		/**
-		 * adderX=(start.getX()>end.getX())?(start.getX()-end.getX()):(end.getX()-start.getX());
-		adderY=(start.getY()>end.getY())?(start.getY()-end.getY()):(end.getY()-start.getY());
+		this.block=block;
 		
-		 */
-		//adderZ=(start.getZ()>end.getZ())?(start.getZ()-end.getZ()):(end.getZ()-start.getZ());
-		System.out.println(start.getX()+ " x "+start.getY());
-		System.out.println("S "+start.getZ());
-		System.out.println("E	 "+end.getZ());
 		BFS(start);
 	}
+	public void setBlock(Block b) {
+		this.block.add(b);
+	}
 	public void addNeighbor(PathNode a) {
-		double adder=1;
-		double adderX1=(a.getX()-adder<end.getX())?a.getX()-end.getX():adder;
-		double adderX2=(a.getX()+adder>end.getX())?end.getX()-a.getX():adder;
-		double adderY1=(a.getY()-adder<end.getY())?a.getY()-end.getY():adder;
-		double adderY2=(a.getY()+adder>end.getY())?end.getY()-a.getY():adder;
-		double adderZ1=(a.getZ()-adder<end.getZ())?a.getZ()-end.getZ():adder;
-		double adderZ2=(a.getZ()+adder>end.getZ())?end.getZ()-a.getZ():adder;
+		double adder=10;
+		double adderX1=defNxtPnt(a.getX(),adder,end.getX(),0,1);
+		double adderX2=defNxtPnt(a.getX(),adder,end.getX(),1,0);
+		double adderZ1=defNxtPnt(a.getZ(),adder,end.getZ(),0,0);
+		double adderZ2=defNxtPnt(a.getZ(),adder,end.getZ(),1,0);
+		double adderY1=defNxtPnt(a.getY(),adder, end.getY(),0,0);
+		double adderY2=defNxtPnt(a.getY(),adder,end.getY(),1,0);
 		
-		if(!validate(new PathNode(a.getX()-adderX1,a.getY(),a.getZ())) ) {
+		if(!validate(new PathNode(a.getX()-adderX1,a.getY(),a.getZ()))
+				) {
 			createNode(a,new PathNode(a.getX()-adderX1,a.getY(),a.getZ()));
 		}
-		if(!validate(new PathNode(a.getX()+adderX2,a.getY(),a.getZ()))) {
+		if(!validate(new PathNode(a.getX()+adderX2,a.getY(),a.getZ()))
+				) {
 			createNode(a,new PathNode(a.getX()+adderX2,a.getY(),a.getZ()));
-		}
-		if(!validate(new PathNode(a.getX(),a.getY()-adderY1,a.getZ()))) {
-			createNode(a,new PathNode(a.getX(),a.getY()-adderY1,a.getZ()));
-		}
-		if(!validate(new PathNode(a.getX(),a.getY()+adderY2,a.getZ()))) {
-			createNode(a,new PathNode(a.getX(),a.getY()+adderY2,a.getZ()));
 		}
 		if(!validate(new PathNode(a.getX(),a.getY(),a.getZ()-adderZ1))) {
 			createNode(a,new PathNode(a.getX(),a.getY(),a.getZ()-adderZ1));
@@ -52,34 +45,66 @@ public class Pipe {
 		if(!validate(new PathNode(a.getX(),a.getY(),a.getZ()+adderZ2))) {
 			createNode(a,new PathNode(a.getX(),a.getY(),a.getZ()+adderZ2));
 		}
-		pid++;
+		if(!validate(new PathNode(a.getX(),a.getY()-adderY1,a.getZ()))) {
+			createNode(a,new PathNode(a.getX(),a.getY()-adderY1,a.getZ()));
+		}
+		if(!validate(new PathNode(a.getX(),a.getY()+adderY2,a.getZ()))) {
+			createNode(a,new PathNode(a.getX(),a.getY()+adderY2,a.getZ()));
+		}
+		
 	}
+	public boolean inBlock() {
+		
+		return false;
+	}
+	public Block detectBlock(double a, int op) {
+		
+		 Block res=null;
+		
+		return res;
+	}
+	public double defNxtPnt(double a, double b, double c, int op, int f) {
+		double adder=0;
+		if(op==0) {
+			if(a>c) {
+				adder=(a-b<c)?a-c:b;
+			}
+			
+		}else {
+			if(a<c) {
+				adder=(a+b<c)?b:c-a ;
+				System.out.println("if "+a+" + "+b +" > " +c + " ? returns "+(c-a)+" else returns "+b+ " res = "+adder);
+			}
+		}
+		
+		return adder;
+	}
+	
 	public void createNode(PathNode p, PathNode ch) {
 		ch.setParent(p);
-		p.id=pid;
 		//System.out.println(ch.getX() +" "+ch.getY() + " " +ch.getZ());
 		queue.add(ch);
 	}
+	int counter=0;
 	public void BFS(PathNode a) {
 		//System.out.println("q l  "+queue.size());
 		visited.add(a);
 		addNeighbor(a);
 		if(a.getX()==end.getX() && a.getY()==end.getY() && a.getZ()==end.getZ()) {
-			System.out.println("a "+a.getX()+" - "+a.getY()+" - "+a.getZ());
-			System.out.println("e "+end.getX()+" - "+end.getY()+" - "+end.getZ());
+			System.out.println("s "+start.getX()+" , "+start.getY()+" , "+start.getZ());
+			System.out.println("e "+end.getX()+" , "+end.getY()+" , "+end.getZ());
 			trackPath(a);
 		}else {
 			//System.out.println("eeeeeeeeeeeeee " + a.getParent().id);
-			
+			counter++;
 			BFS(queue.poll());
 		
 		}
 	}
 	public void trackPath(PathNode a) {
 		pnList.push(a);
-		if(a.getX()==start.getX() && a.getY()==start.getY() && a.getZ()==start.getZ()) {
-			//System.out.println("----------");
-			//System.out.println("dsfddsf fff "+pnList.size());
+		if(a.getParent()==null) {
+			System.out.println("dsfddsf fff "+pnList.size());
 		}else {
 			trackPath(a.getParent());
 			
@@ -107,6 +132,15 @@ public class Pipe {
 	}
 
 	public Stack<PathNode> getPath() {
+		 /**
+		  * for(PathNode p:queue) {
+			if(p.getParent()!=null) {
+				System.out.println("- "+p.getParent().getX() + " , "+p.getParent().getY()+" , "+p.getParent().getZ());
+			}
+		}
+		  */
+		 
+		
 		return this.pnList;
 	}
 }

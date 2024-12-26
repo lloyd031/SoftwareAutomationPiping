@@ -3,12 +3,12 @@ package application;
 public class PathNode{
 	private double x,y,z;
 	private PathNode parent;
-	int id=0;
 	public PathNode(double x, double y, double z) {
 		this.x=x;
 		this.y=y;
 		this.z=z;
 	}
+	
 	public double getX() {
 		return this.x;
 	}
