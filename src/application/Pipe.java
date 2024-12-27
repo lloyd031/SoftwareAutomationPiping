@@ -73,7 +73,7 @@ public class Pipe {
 		}else {
 			if(a<c) {
 				adder=(a+b<c)?b:c-a ;
-				System.out.println("if "+a+" + "+b +" > " +c + " ? returns "+(c-a)+" else returns "+b+ " res = "+adder);
+				
 			}
 		}
 		
@@ -82,32 +82,23 @@ public class Pipe {
 	
 	public void createNode(PathNode p, PathNode ch) {
 		ch.setParent(p);
-		//System.out.println(ch.getX() +" "+ch.getY() + " " +ch.getZ());
 		queue.add(ch);
 	}
-	int counter=0;
+
 	public void BFS(PathNode a) {
-		//System.out.println("q l  "+queue.size());
 		visited.add(a);
 		addNeighbor(a);
 		if(a.getX()==end.getX() && a.getY()==end.getY() && a.getZ()==end.getZ()) {
-			System.out.println("s "+start.getX()+" , "+start.getY()+" , "+start.getZ());
-			System.out.println("e "+end.getX()+" , "+end.getY()+" , "+end.getZ());
 			trackPath(a);
 		}else {
-			//System.out.println("eeeeeeeeeeeeee " + a.getParent().id);
-			counter++;
 			BFS(queue.poll());
 		
 		}
 	}
 	public void trackPath(PathNode a) {
 		pnList.push(a);
-		if(a.getParent()==null) {
-			System.out.println("dsfddsf fff "+pnList.size());
-		}else {
+		if(a.getParent()!=null) {
 			trackPath(a.getParent());
-			
 		}
 	}
 	public boolean validate(PathNode a) {
@@ -132,15 +123,7 @@ public class Pipe {
 	}
 
 	public Stack<PathNode> getPath() {
-		 /**
-		  * for(PathNode p:queue) {
-			if(p.getParent()!=null) {
-				System.out.println("- "+p.getParent().getX() + " , "+p.getParent().getY()+" , "+p.getParent().getZ());
-			}
-		}
-		  */
 		 
-		
 		return this.pnList;
 	}
 }
