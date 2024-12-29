@@ -53,11 +53,10 @@ public class MainController implements Initializable{
 	private DoubleProperty acuY=null;
 	private DoubleProperty compX=null;
 	private DoubleProperty compY=null;
-    private Group acu;
-    private Group cmp;
+    private Group acu, root3D, cmp,mainRoot;
     private PathNode start;
     private PathNode end;
-    private Group flowline=new Group();
+    private Group flowlinea;
     private double width=50;
     private double height=20;
     private double length=70;
@@ -73,8 +72,8 @@ public class MainController implements Initializable{
     private double compd=3.3;
     private double wall=2.032/2;
     private double selectedcomp=0;
-    private Block acuB,cmpB;
-    private LinkedList<Block> block= new  LinkedList<Block>();
+    private boolean lockperspective=false;
+    private PerspectiveCamera camera;
 	@FXML
     private SubScene threeDModel;
 	
@@ -101,20 +100,23 @@ public class MainController implements Initializable{
     	cbboxref.setItems(FXCollections.observableArrayList("R-22","R-134a","R-407","R-410"));
     	cbboxwall.setItems(FXCollections.observableArrayList("Wall-1","Wall-2","Wall-3","Wall-4"));
         cbboxwall.getSelectionModel().select(2);
-        Group root3D = new Group();
+        root3D = new Group();
          n=new Box[4];
          n2=new Box[4];
-        loadModel(root3D);
-        threeDModel.setRoot(root3D);
+         camera = new PerspectiveCamera(true);
+ 		camera.setFarClip(1500);
+ 		camera.setNearClip(1);
+ 		camera.translateXProperty().set(-5);
+ 		camera.translateZProperty().set(-200);
+         mainRoot=new Group();
+         mainRoot.getChildren().add(root3D);
+         mainRoot.getChildren().addAll(prepareLightSource());
+         loadModel(root3D);
+        
+        threeDModel.setRoot( mainRoot);
         // Set camera
-        PerspectiveCamera camera = new PerspectiveCamera(true);
-		camera.setFarClip(1500);
-		camera.setNearClip(1);
-		camera.translateXProperty().set(-10);
-		camera.translateYProperty().set(-200);
-		camera.translateZProperty().set(-200);
-		camera.setRotationAxis(Rotate.X_AXIS);
-		camera.setRotate(-45)    ;
+       
+		initPerspective(camera,root3D);
         //camera.translateZProperty().set(-1000);
 		threeDModel.widthProperty().bind(borderPane.widthProperty());
 		threeDModel.heightProperty().bind(borderPane.heightProperty());
@@ -138,14 +140,11 @@ public class MainController implements Initializable{
     	});
     	
     	cbboxwall.setOnAction(event -> {
-            System.out.println("Selected value: " + cbboxwall.getSelectionModel().getSelectedIndex());
             root3D.getChildren().removeAll(acu,acuL,cmp);
             selectedwall=cbboxwall.getSelectionModel().getSelectedIndex();
             acu=setAcu();
             cmp=setCompressor();
-            flowline.getChildren().clear();
             drawPipe();
-            System.out.println("acu : "+acu.getTranslateZ());
             addAcul(root3D);
             initializeLocationAcu();
             initAcuDragged();
@@ -170,7 +169,19 @@ public class MainController implements Initializable{
         
     	
     }
-    
+    private void initPerspective(Camera cam,Group g) {
+    	if(lockperspective==false) {
+    		g.translateZProperty().set(0);
+    		cam.translateYProperty().set(-200);
+    		cam.setRotationAxis(Rotate.X_AXIS);
+    		cam.setRotate(-45);
+    	}else {
+    		g.translateYProperty().set(0);
+    		cam.translateYProperty().set(-height/2);
+    		cam.setRotationAxis(Rotate.X_AXIS);
+    		cam.setRotate(0);
+    	}
+    }
     private void prepdragproperty(double x, double y, int sc, double tempx, double tempy) {
     	compdragged=true;
 		selectedcomp=sc;
@@ -194,6 +205,13 @@ public class MainController implements Initializable{
     	
     	cmp.setOnMousePressed(e->{
     		prepdragproperty(e.getX(),e.getY(),1,compX.get(),compY.get());
+    		if(c==0) {
+        		c++;
+        	}else {
+        		c=0;
+        		this.lockperspective=!this.lockperspective;
+        		initPerspective(this.camera,this.root3D);
+        	}
     	});
     	if(selectedwall==2 || selectedwall ==3) {
     		
@@ -252,16 +270,16 @@ public class MainController implements Initializable{
             					}
                 			
             			}
-            			flowline.getChildren().clear();
+            			
                 		drawPipe();
             			
             	}
         	this.prevPointY=e.getSceneY();	
         	this.prevPointXZ=e.getSceneX();	
-        	this.acuB.setLoc(acu.getTranslateX(),acu.getTranslateY(),acu.getTranslateZ());
         	setAcuLoc();
         	});
     	cmp.setOnMouseDragged(e->{
+    		c=0;
     		//double leftBound=(selectedwall>1)?width/2+wall*2:length/-2-wall*2;
     		//double rightBound=(selectedwall>1)?width/-2 - wall*2:length/-2 - wall*2;
         	if(selectedcomp==1) {
@@ -271,11 +289,8 @@ public class MainController implements Initializable{
             	cmp.translateYProperty().bind(compY);
             	compX.set(newX);
             	compY.set(newY);
-
-                this.cmpB.setLoc(cmp.getTranslateX(),cmp.getTranslateY(),cmp.getTranslateZ());
-            	
             	setCompLoc();
-            	flowline.getChildren().clear();
+            	
         		drawPipe();
         	}
         	
@@ -290,6 +305,8 @@ public class MainController implements Initializable{
     		compdragged=false;
     		this.prevPointXZ=0;
     	});
+    	
+    	
     }
    
     private void setAcuLoc() {
@@ -304,7 +321,7 @@ public class MainController implements Initializable{
     		}
     		txtacut.setText(String.format("%.2f",height/10 - Math.abs((acu.getTranslateY()-acuh)/10)));
     		txtacub.setText(String.format("%.2f",Math.abs(acu.getTranslateY()/10)));
-    		
+    		drawPipe();
 		
 		/*
 		 * double cux=(selectedwall==2 || selectedwall==3)?(acu.getTranslateX()-width/-2-acuw/2)/10:(acu.getTranslateZ()-length/-2-acuw/2)/10;
@@ -326,6 +343,7 @@ public class MainController implements Initializable{
     		}
 			txtcompt.setText(String.format("%.2f",height/10 - Math.abs((cmp.getTranslateY()-comph)/10)));
     		txtcompb.setText(String.format("%.2f",Math.abs(cmp.getTranslateY()/10)));
+    		drawPipe();
 }
     private void initializeLocationAcu()
     {
@@ -339,6 +357,7 @@ public class MainController implements Initializable{
     private void initlocation(DoubleProperty a,double bound, String val, int mul) {
     	try{a.set( bound + Double.parseDouble(val)*mul);
     	updateLoc();
+    	drawPipe();
     	}catch(Exception x) {
     		updateLoc();
 		   }
@@ -352,17 +371,16 @@ public class MainController implements Initializable{
     }
     private void loadModel(Group root3D) {
     	root3D.getChildren().addAll(drawRoom(width,height,length));
-        root3D.getChildren().addAll(prepareLightSource());
+       
         acu=setAcu();
         cmp=setCompressor();
-        this.acuB=new Block((selectedwall>1)?acuw:0,(selectedwall>1)?acuh:0,(selectedwall>1)?acud:0);
-        this.cmpB=new Block((selectedwall>1)?compw:0,(selectedwall>1)?comph:0,(selectedwall>1)?compd:0);
-        this.acuB.setLoc(acu.getTranslateX(),acu.getTranslateY(),acu.getTranslateZ());
-        this.cmpB.setLoc(cmp.getTranslateX(),cmp.getTranslateY(),cmp.getTranslateZ());
-        flowline=new Group();
+       
+        flowlinea=new Group();
         addAcul(root3D);
-        root3D.getChildren().addAll(acu,cmp,flowline);
-		System.out.println("GGG");
+        PointLight pLight=new PointLight();
+		pLight.setColor(Color.WHITE);
+		pLight.getTransforms().add(new Translate(0,roomHieght*-1-7,0));
+        root3D.getChildren().addAll(acu,cmp,flowlinea,pLight);
     }
     private void addAcul(Group root) {
     	int i=(selectedwall==2 || selectedwall==1)?1:-1;
@@ -454,73 +472,69 @@ public class MainController implements Initializable{
 	    compressor.setRotationAxis(Rotate.Y_AXIS);
 	    compressor.setRotate(deg);
 	    if(i==2 || i==3) {
-	    	compressor.translateZProperty().set(wall.getTranslateZ()-(compd+this.wall)/2*z);
+	    	compressor.translateZProperty().set(wall.getTranslateZ()-(compd+this.wall)/2*z - 3.048*z) ;
 	    	
 	    }else if(i==0 || i ==1) {
-	    	compressor.translateXProperty().set(wall.getTranslateX()-(compd+this.wall)/2*z);
+	    	compressor.translateXProperty().set(wall.getTranslateX()-(compd+this.wall)/2*z - 3.048*z);
 	    }
 	    compressor.translateYProperty().set((height)/-2 + acuh);
 	   
 	    return  compressor;
     }
    	private void drawPipe() {
-   		
-		int mul=(selectedwall==2|| selectedwall==0)?1:-1;
-		double x1=(selectedwall>1)?cmp.getTranslateX()+compw/2*-mul:n2[selectedwall].getTranslateX()+this.wall*mul/2*mul+0.25*mul;
-		double z1=(selectedwall>1)?n2[selectedwall].getTranslateZ()+this.wall/2*mul+0.25*mul:cmp.getTranslateZ()+compw/2*mul;
-		double x2=(selectedwall>1)?acu.getTranslateX()-acuw/2*-mul+0.5*-mul:n[selectedwall].getTranslateX()+this.wall*2*mul-0.25*mul;
-		double z2=(selectedwall>1)?n[selectedwall].getTranslateZ()+this.wall*2*mul-0.25*mul:acu.getTranslateZ()-acuw/2*mul;
-		this.start=new PathNode(x1,cmp.getTranslateY()-1,z1);
-		this.end=new PathNode(x2,acu.getTranslateY()-1,z2);
-		
-		
-		 
-		this.block.add(acuB);
-		this.block.add(cmpB);
-		
-		Pipe p=new Pipe(this.start, this.end,this.block);
-		Stack<PathNode> k=p.getPath();
-		PathNode path[]=new PathNode[p.getPath().size()];
-		for(int j=0; j<path.length; j++) {
-				path[j]=k.pop();
-			}
-		
-		for(int j=path.length-1; j>=0; j--) {
-			if(j!=0) {
-				if(path[j].getZ()<path[j-1].getZ() || path[j].getZ()>path[j-1].getZ()){
-					double w=path[j-1].getZ()-path[j].getZ();
-					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX(),path[j].getY(), path[j].getZ()+w/2,90);
-	    			pathpoint.setRotationAxis(Rotate.X_AXIS);
-	    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
-				}
-				if(path[j].getY()>path[j-1].getY() || path[j].getY()<path[j-1].getY()){
-					double w=path[j].getY()-path[j-1].getY();
-					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX(),path[j].getY()-w/2, path[j].getZ(),0);
-	    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
-				}
-				if(path[j].getX()>path[j-1].getX() || path[j].getX()<path[j-1].getX()){
-					double w=path[j].getX()-path[j-1].getX();
-					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX()-w/2,path[j].getY(), path[j].getZ(),90);
-					pathpoint.setRotationAxis(Rotate.Z_AXIS);
-	    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
-				}
-			}else {
-				if(path[0].getX()>path[1].getX() || path[0].getX()>path[1].getX()){
-					double w=path[0].getX()-path[1].getX();
-					Cylinder pathpoint=createpn(Math.abs(w),path[j].getX()-w/2,path[j].getY(), path[j].getZ(),90);
-	    			pathpoint.setRotationAxis(Rotate.Z_AXIS);
-	    			this.flowline.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
-				}
-			}
-			
-		}
+   		flowlinea.getChildren().clear();
+   		 
+   		for(int i=0; i<2; i++) {
+   			int mul=(selectedwall==2|| selectedwall==0)?1:-1;
+   			double x1=(selectedwall>1)?cmp.getTranslateX()+compw/2*-mul+0.25*-mul:cmp.getTranslateX()+compd/2*-mul;
+   			double z1=(selectedwall>1)?cmp.getTranslateZ()+compd/2*-mul:cmp.getTranslateZ()+compw/2*mul+0.25*mul;
+   			double x2=(selectedwall>1)?acu.getTranslateX()-acuw/2*-mul+0.5*-mul:n[selectedwall].getTranslateX()+this.wall*2*mul-0.25*mul;
+   			double z2=(selectedwall>1)?n[selectedwall].getTranslateZ()+this.wall*2*mul-0.25*mul:acu.getTranslateZ()-acuw/2*mul;
+   			double y1=cmp.getTranslateY();
+   			double y2=acu.getTranslateY();
+   			this.start=new PathNode(x1,y1-((i==0)?(y1>=y2)?1:2:(y1<=y2)?1:2),z1);
+   			this.end=new PathNode((selectedwall>1)?((i==0)?(x1>=x2)?x2-1:x2:(x1<=x2)?x2-1:x2):x2,y2-1,(selectedwall>1)?z2:((i==0)?(z1>=z2)?z2-1:z2:(z1<=z2)?z2-1:z2));
+   			
+   			Pipe p=new Pipe(this.start, this.end,this.selectedwall);
+   			Stack<PathNode> k=p.getPath();
+   			PathNode path[]=new PathNode[p.getPath().size()];
+   			for(int j=0; j<path.length; j++) {
+   					path[j]=k.pop();
+   				}
+   			
+   			for(int j=path.length-1; j>=0; j--) {
+   				if(j!=0) {
+   					if(path[j].getZ()<path[j-1].getZ() || path[j].getZ()>path[j-1].getZ()){
+   						double w=path[j-1].getZ()-path[j].getZ();
+   						Cylinder pathpoint=createpn(Math.abs(w),path[j].getX(),path[j].getY(), path[j].getZ()+w/2,90);
+   		    			pathpoint.setRotationAxis(Rotate.X_AXIS);
+   		    			this.flowlinea.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
+   					}
+   					if(path[j].getY()>path[j-1].getY() || path[j].getY()<path[j-1].getY()){
+   						double w=path[j].getY()-path[j-1].getY();
+   						Cylinder pathpoint=createpn(Math.abs(w),path[j].getX(),path[j].getY()-w/2, path[j].getZ(),0);
+   		    			this.flowlinea.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
+   					}
+   					if(path[j].getX()>path[j-1].getX() || path[j].getX()<path[j-1].getX()){
+   						double w=path[j].getX()-path[j-1].getX();
+   						Cylinder pathpoint=createpn(Math.abs(w),path[j].getX()-w/2,path[j].getY(), path[j].getZ(),90);
+   						pathpoint.setRotationAxis(Rotate.Z_AXIS);
+   		    			this.flowlinea.getChildren().add(pathpoint);// System.out.println(path[j].getX()+"------ "+path[j].getY()+"------ "+path[j].getZ());
+   					}
+   				}
+   					 
+   				
+   				
+   			}
+   		 
+   		}
 		
 		
 	
    	}
    	public Cylinder createpn(double w, double x, double y, double z, int deg) {
    		PhongMaterial material = new PhongMaterial();
-		material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/pipe.png")));
+		material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream((selectedwall==2 || selectedwall==1)?"/resources/pipe.png":"/resources/pipe.png")));
 		Cylinder pathpoint=new Cylinder(0.25,w);
 		pathpoint.translateXProperty().set(x);
 		pathpoint.translateYProperty().set(y);
@@ -585,12 +599,12 @@ public class MainController implements Initializable{
 		return box;
 	}
   
-    
+    int c=0;
     private Node[] drawRoom(double roomWidth, double roomHieght, double roomLength) {
     	//whlxyz
     	
     	
-    	Box platform= prepareBox(roomWidth+10,roomLength+10,0.5,0,0.76,0,0);
+    	Box platform= prepareBox(roomWidth+10,roomLength+10,2,0,1.1,0,0);
 		Box floor= prepareBox(roomWidth,roomLength,1.5,0,0.75,0,1);
 		Box wall1= prepareBox(wall,roomLength+wall*2,roomHieght,(roomWidth/2)+wall/2,roomHieght/2*-1,0,0);
 		Box wall2= prepareBox(wall,roomLength+wall*2,roomHieght,(roomWidth/2*-1)-wall/2,roomHieght/2*-1,0,0);
@@ -610,23 +624,17 @@ public class MainController implements Initializable{
 			n[i]=wall[i];
 			n2[i]=wall[i+4];
 		}
-
+		
+        
 		return wall;
 	}
 	private Node[] prepareLightSource() {
 		AmbientLight amLight= new AmbientLight();
-		amLight.setColor(Color.valueOf("#424242"));
-		PointLight pLight=new PointLight();
-		pLight.setColor(Color.WHITE);
-		pLight.getTransforms().add(new Translate(0,roomHieght*-1-7,0));
+		amLight.setColor(Color.valueOf("#373737"));
 		PointLight pLight1=new PointLight();
 		pLight1.setColor(Color.valueOf("#373737"));
-		pLight1.getTransforms().add(new Translate(80,-5,-100));
-		
-		Sphere sphere=new Sphere(2);
-		sphere.getTransforms().setAll(pLight1.getTransforms());
-		
-		return new Node[] {pLight,amLight,pLight1};
+		pLight1.getTransforms().add(new Translate(camera.getTranslateX(),camera.getTranslateY(),camera.getTranslateZ()));
+		return new Node[] {amLight,pLight1};
 	}
 	private void initMouseControl(Group group, SubScene scene,Camera cam) {
 		Rotate rotateX;
@@ -642,6 +650,7 @@ public class MainController implements Initializable{
 		});
 		
 		scene.setOnMouseDragged(event -> {
+			c=0;
 			if(compdragged==false) {
 				angleX.set(anchorAngleX-(anchorY-event.getSceneY()));
 				angleY.set(anchorAngleY+(anchorX-event.getSceneX()));
@@ -654,7 +663,9 @@ public class MainController implements Initializable{
 		scene.addEventHandler(ScrollEvent.SCROLL, event ->{
 			double movement=event.getDeltaY();
 			group.translateZProperty().set(group.getTranslateZ()+movement/2*-1);
-			group.translateYProperty().set(group.getTranslateY()+movement/2*-1);
+			if(lockperspective==false) {
+				group.translateYProperty().set(group.getTranslateY()+movement/2*-1);
+			}
 		});
 		
 		
@@ -669,6 +680,7 @@ public class MainController implements Initializable{
 	     		   if(txtacul.getText().equals("center")) {
 	     			  acuX.set(0);
 	     			  setAcuLoc();
+	     			  
 	     		   }else {
 	     			initlocation(acuX, boundL,txtacul.getText(),mul);
 	     			 }
