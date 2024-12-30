@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.ResourceBundle;
 import java.util.Stack;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
@@ -108,6 +109,9 @@ public class MainController implements Initializable{
  		camera.setNearClip(1);
  		camera.translateXProperty().set(-5);
  		camera.translateZProperty().set(-200);
+ 		camera.translateYProperty().set(-200);
+ 		camera.setRotationAxis(Rotate.X_AXIS);
+        camera.setRotate(-45);
          mainRoot=new Group();
          mainRoot.getChildren().add(root3D);
          mainRoot.getChildren().addAll(prepareLightSource());
@@ -116,7 +120,7 @@ public class MainController implements Initializable{
         threeDModel.setRoot( mainRoot);
         // Set camera
        
-		initPerspective(camera,root3D);
+        
         //camera.translateZProperty().set(-1000);
 		threeDModel.widthProperty().bind(borderPane.widthProperty());
 		threeDModel.heightProperty().bind(borderPane.heightProperty());
@@ -170,16 +174,54 @@ public class MainController implements Initializable{
     	
     }
     private void initPerspective(Camera cam,Group g) {
+    	cam.setRotationAxis(Rotate.X_AXIS);
     	if(lockperspective==false) {
-    		g.translateZProperty().set(0);
-    		cam.translateYProperty().set(-200);
-    		cam.setRotationAxis(Rotate.X_AXIS);
-    		cam.setRotate(-45);
+    		double gap=(cam.getTranslateY()-(-200))/10;
+    		double ggap=g.getTranslateZ()/10;
+    		//cam.translateYProperty().set(-200);
+    		AnimationTimer timer= new AnimationTimer() {
+
+				@Override
+				public void handle(long arg0) {
+					// TODO Auto-generated method stub
+					g.translateZProperty().set(g.getTranslateZ()-ggap);
+					cam.translateYProperty().set(cam.getTranslateY()-gap);
+					cam.setRotate(cam.getRotate()-4.5);
+					if(cam.getTranslateY()>=-200 && cam.getRotate()<=-45) {
+		    			this.stop();
+		    		}
+				}
+    			
+    		};
+    		timer.start();
+    		
+    		
+    		
     	}else {
-    		g.translateYProperty().set(0);
+    		double gap= (-height/2 -(-200))/10;
+    		double ggap=g.getTranslateY()/10;
+    		AnimationTimer timer= new AnimationTimer() {
+
+				@Override
+				public void handle(long arg0) {
+					// TODO Auto-generated method stub
+					g.translateYProperty().set(g.getTranslateY()-ggap);
+					cam.translateYProperty().set(cam.getTranslateY()+gap);
+					cam.setRotate(cam.getRotate()+4.5);
+					if(cam.getTranslateY()>=-height/2 && cam.getRotate()>=0 && g.getTranslateY()>=0) {
+		    			this.stop();
+		    		}
+				}
+    			
+    		};
+    		timer.start();
+    		
+    		/**
+    		 * g.translateYProperty().set(0);
     		cam.translateYProperty().set(-height/2);
     		cam.setRotationAxis(Rotate.X_AXIS);
     		cam.setRotate(0);
+    		 */
     	}
     }
     private void prepdragproperty(double x, double y, int sc, double tempx, double tempy) {
@@ -534,7 +576,7 @@ public class MainController implements Initializable{
    	}
    	public Cylinder createpn(double w, double x, double y, double z, int deg) {
    		PhongMaterial material = new PhongMaterial();
-		material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream((selectedwall==2 || selectedwall==1)?"/resources/pipe.png":"/resources/pipe.png")));
+		material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/pipe.png")));
 		Cylinder pathpoint=new Cylinder(0.25,w);
 		pathpoint.translateXProperty().set(x);
 		pathpoint.translateYProperty().set(y);
