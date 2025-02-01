@@ -19,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SubScene;
+import javafx.scene.chart.Axis;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -32,6 +33,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -74,6 +76,7 @@ public class MainController implements Initializable{
     private double wall=2.032/2;
     private double selectedcomp=0;
     private boolean lockperspective=false;
+    private Cylinder fan;
     private PerspectiveCamera camera;
 	@FXML
     private SubScene threeDModel;
@@ -114,9 +117,9 @@ public class MainController implements Initializable{
         camera.setRotate(-45);
          mainRoot=new Group();
          mainRoot.getChildren().add(root3D);
-         mainRoot.getChildren().addAll(prepareLightSource());
-         loadModel(root3D);
         
+         loadModel(root3D);
+         mainRoot.getChildren().addAll(prepareLightSource());
         threeDModel.setRoot( mainRoot);
         // Set camera
        
@@ -169,9 +172,24 @@ public class MainController implements Initializable{
         	double cap=r.capacityIntons(this.length/10, this.width/10);
         	lblcap.setText(String.format("%.5f",cap));
         	lblcap2.setText(String.format("%.5f",r.capacityInKW(cap)));
+        	
+        	AnimationTimer fanRotate=new AnimationTimer() {
+            	
+    			@Override
+    			public void handle(long arg0) {
+    				// TODO Auto-generated method stub
+    				
+    				fan.setRotationAxis(Rotate.Z_AXIS);
+    				fan.setRotate(fan.getRotate()+5);
+    				
+    			}
+            	
+            };
+            
+        	//fanRotate.start();
         });
         
-    	
+        
     }
     private void initPerspective(Camera cam,Group g) {
     	cam.setRotationAxis(Rotate.X_AXIS);
@@ -501,7 +519,6 @@ public class MainController implements Initializable{
 		Cylinder f=new Cylinder(2.5,1);
 		f.translateYProperty().set(box.getTranslateY());
 		f.translateXProperty().set(-1.5/2);
-		f.setRotationAxis(Rotate.Z_AXIS);
 		f.setRotationAxis(Rotate.X_AXIS);
 		f.setRotate(90);
 		f.translateZProperty().set(box.getTranslateZ()-0.05);
@@ -513,6 +530,7 @@ public class MainController implements Initializable{
 	    compressor.getChildren().addAll(box,c,c1,box1,box2,box3,box4,box5,box6,f);
 	    compressor.setRotationAxis(Rotate.Y_AXIS);
 	    compressor.setRotate(deg);
+	    this.fan=f;
 	    if(i==2 || i==3) {
 	    	compressor.translateZProperty().set(wall.getTranslateZ()-(compd+this.wall)/2*z - 3.048*z) ;
 	    	
@@ -576,7 +594,9 @@ public class MainController implements Initializable{
    	}
    	public Cylinder createpn(double w, double x, double y, double z, int deg) {
    		PhongMaterial material = new PhongMaterial();
-		material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/pipe.png")));
+		//material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/pipe.png")));
+   		material.setDiffuseColor(Color.color(1, 1, 1,0.6));
+   		material.setSpecularColor(Color.WHITE);
 		Cylinder pathpoint=new Cylinder(0.25,w);
 		pathpoint.translateXProperty().set(x);
 		pathpoint.translateYProperty().set(y);
@@ -625,6 +645,7 @@ public class MainController implements Initializable{
 		}else if(floor==2)
 		{
 		 material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/gray.jpg")));
+		 
 		}else {
 			material.setDiffuseColor(Color.GREY);
 			//material.setSelfIlluminationMap(new Image(getClass().getResourceAsStream("/resources/white.jpg")));
@@ -674,8 +695,8 @@ public class MainController implements Initializable{
 		AmbientLight amLight= new AmbientLight();
 		amLight.setColor(Color.valueOf("#373737"));
 		PointLight pLight1=new PointLight();
-		pLight1.setColor(Color.valueOf("#373737"));
-		pLight1.getTransforms().add(new Translate(camera.getTranslateX(),camera.getTranslateY(),camera.getTranslateZ()));
+		pLight1.setColor(Color.valueOf("#252325"));
+		pLight1.getTransforms().add(new Translate(camera.getTranslateX(),cmp.getTranslateY(),camera.getTranslateZ()));
 		return new Node[] {amLight,pLight1};
 	}
 	private void initMouseControl(Group group, SubScene scene,Camera cam) {
